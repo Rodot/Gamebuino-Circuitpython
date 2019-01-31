@@ -42,9 +42,18 @@ $(Q)$(CC) $(CFLAGS) -c -MD -o $@ $<
   $(RM) -f $(@:.o=.d)
 endef
 
+define compile_cpp
+$(STEPECHO) "C++ $<"
+$(Q)$(CXX) $(CPPFLAGS) -c -MD -o $@ $<
+endef
+
 vpath %.c . $(TOP)
 $(BUILD)/%.o: %.c
 	$(call compile_c)
+
+vpath %.cpp . $(TOP)
+$(BUILD)/%.o: $.cpp
+	$(call compile_cpp)
 
 QSTR_GEN_EXTRA_CFLAGS += -DNO_QSTR
 
@@ -53,6 +62,10 @@ QSTR_GEN_EXTRA_CFLAGS += -DNO_QSTR
 vpath %.c . $(BUILD)
 $(BUILD)/%.o: %.c
 	$(call compile_c)
+
+vpath %.c . $(BUILD)
+$(BUILD)/%.o: %.cpp
+	$(call compile_cpp)
 
 QSTR_GEN_EXTRA_CFLAGS += -I$(BUILD)/tmp
 

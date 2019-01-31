@@ -87,10 +87,38 @@ BASE_CFLAGS = \
 
 # NDEBUG disables assert() statements. This reduces code size pretty dramatically, per tannewt.
 
+BASE_CPPFLAGS = \
+	-fsingle-precision-constant \
+	-fno-strict-aliasing \
+	-Wdouble-promotion \
+	-Wno-endif-labels \
+	-Werror-implicit-function-declaration \
+	-Wfloat-equal \
+	-Wundef \
+	-Wshadow \
+	-Wwrite-strings \
+	-Wsign-compare \
+	-Wmissing-format-attribute \
+	-Wno-deprecated-declarations \
+	-Wunreachable-code \
+	-Wcast-align \
+	-Wno-error=lto-type-mismatch \
+	-D__$(CHIP_VARIANT)__ \
+	-ffunction-sections \
+	-fdata-sections \
+	-fshort-enums \
+	-DCIRCUITPY_SOFTWARE_SAFE_MODE=0x0ADABEEF \
+	-DCIRCUITPY_CANARY_WORD=0xADAF00 \
+	-DCIRCUITPY_SAFE_RESTART_WORD=0xDEADBEEF \
+	--param max-inline-insns-single=500
+
 ifeq ($(CHIP_FAMILY), samd21)
 CFLAGS += -Os -DNDEBUG
 # TinyUSB defines
 CFLAGS += -DCFG_TUSB_MCU=OPT_MCU_SAMD21 -DCFG_TUD_MIDI_RX_BUFSIZE=128 -DCFG_TUD_CDC_RX_BUFSIZE=128 -DCFG_TUD_MIDI_TX_BUFSIZE=128 -DCFG_TUD_CDC_TX_BUFSIZE=128 -DCFG_TUD_MSC_BUFSIZE=512
+CPPFLAGS += -Os -DNDEBUG
+# TinyUSB defines
+CPPFLAGS += -DCFG_TUSB_MCU=OPT_MCU_SAMD21 -DCFG_TUD_MIDI_RX_BUFSIZE=128 -DCFG_TUD_CDC_RX_BUFSIZE=128 -DCFG_TUD_MIDI_TX_BUFSIZE=128 -DCFG_TUD_CDC_TX_BUFSIZE=128 -DCFG_TUD_MSC_BUFSIZE=512
 endif
 
 ifeq ($(CHIP_FAMILY), samd51)
@@ -116,17 +144,28 @@ else
   # There is no simple default value, though.
   ifdef INTERNAL_FLASH_FILESYSTEM
     CFLAGS += -finline-limit=50
+    CPPFLAGS += -finline-limit=50
   endif
   ifdef CFLAGS_INLINE_LIMIT
     CFLAGS += -finline-limit=$(CFLAGS_INLINE_LIMIT)
+    CPPFLAGS += -finline-limit=$(CFLAGS_INLINE_LIMIT)
   endif
   CFLAGS += -flto
+  CPPFLAGS += -flto
 endif
 
 CFLAGS += $(INC) -Wall -Werror -std=gnu11 -nostdlib $(BASE_CFLAGS) $(CFLAGS_MOD) $(COPT) -g
+CPPFLAGS += $(INC) -Wall -Werror -std=c++11 -nostdlib $(BASE_CPPFLAGS) $(CFLAGS_MOD) $(COPT) -g
 
 ifeq ($(CHIP_FAMILY), samd21)
 CFLAGS += \
+	-mthumb \
+	-mabi=aapcs-linux \
+	-mcpu=cortex-m0plus \
+	-msoft-float \
+	-mfloat-abi=soft \
+	-DSAMD21
+CPPFLAGS += \
 	-mthumb \
 	-mabi=aapcs-linux \
 	-mcpu=cortex-m0plus \
@@ -149,6 +188,8 @@ ifneq ($(FROZEN_DIR),)
 # and then invoke make with FROZEN_DIR=scripts (be sure to build from scratch).
 CFLAGS += -DMICROPY_MODULE_FROZEN_STR
 CFLAGS += -Wno-error=lto-type-mismatch
+CPPFLAGS += -DMICROPY_MODULE_FROZEN_STR
+CPPFLAGS += -Wno-error=lto-type-mismatch
 endif
 
 # To use frozen bytecode, put your .py files in a subdirectory (eg frozen/) and
@@ -159,6 +200,9 @@ ifneq ($(FROZEN_MPY_DIRS),)
 CFLAGS += -DMICROPY_QSTR_EXTRA_POOL=mp_qstr_frozen_const_pool
 CFLAGS += -DMICROPY_MODULE_FROZEN_MPY
 CFLAGS += -Wno-error=lto-type-mismatch
+CPPFLAGS += -DMICROPY_QSTR_EXTRA_POOL=mp_qstr_frozen_const_pool
+CPPFLAGS += -DMICROPY_MODULE_FROZEN_MPY
+CPPFLAGS += -Wno-error=lto-type-mismatch
 endif
 
 LDFLAGS = $(CFLAGS) -nostartfiles -fshort-enums -Wl,-nostdlib -Wl,-T,$(LD_FILE) -Wl,-Map=$@.map -Wl,-cref -Wl,-gc-sections -specs=nano.specs -g
@@ -173,14 +217,17 @@ endif
 # in cpp coniditionals, so we #define separate names for each.
 ifeq ($(LONGINT_IMPL),NONE)
 CFLAGS += -DLONGINT_IMPL_NONE
+CPPFLAGS += -DLONGINT_IMPL_NONE
 endif
 
 ifeq ($(LONGINT_IMPL),MPZ)
 CFLAGS += -DLONGINT_IMPL_MPZ
+CPPFLAGS += -DLONGINT_IMPL_MPZ
 endif
 
 ifeq ($(LONGINT_IMPL),LONGLONG)
 CFLAGS += -DLONGINT_IMPL_LONGLONG
+CPPFLAGS += -DLONGINT_IMPL_LONGLONG
 endif
 
 ifeq ($(CHIP_FAMILY), samd21)
@@ -279,7 +326,10 @@ SRC_C = \
 	lib/libc/string0.c \
 	lib/mp-readline/readline.c \
 	freetouch/adafruit_ptc.c \
-	supervisor/shared/memory.c
+	supervisor/shared/memory.c \
+	common-hal/gamebuino-meta/__init__.c
+
+SRC_CPP =	common-hal/gamebuino-meta/gamebuino-meta.cpp
 
 ifeq ($(MICROPY_PY_NETWORK),1)
 CFLAGS += -DMICROPY_PY_NETWORK=1
@@ -453,6 +503,7 @@ SRC_SHARED_MODULE_EXPANDED = $(addprefix shared-bindings/, $(SRC_SHARED_MODULE))
 SRC_S = supervisor/$(CHIP_FAMILY)_cpu.s
 
 OBJ = $(PY_O) $(SUPERVISOR_O) $(addprefix $(BUILD)/, $(SRC_C:.c=.o))
+OBJ += $(addprefix $(BUILD)/, $(SRC_CPP:.cpp=.o))
 OBJ += $(addprefix $(BUILD)/, $(SRC_ASF:.c=.o))
 OBJ += $(addprefix $(BUILD)/, $(SRC_COMMON_HAL_EXPANDED:.c=.o))
 OBJ += $(addprefix $(BUILD)/, $(SRC_SHARED_MODULE_EXPANDED:.c=.o))
@@ -462,7 +513,7 @@ endif
 OBJ += $(addprefix $(BUILD)/, $(SRC_S:.s=.o))
 OBJ += $(addprefix $(BUILD)/, $(SRC_MOD:.c=.o))
 
-SRC_QSTR += $(SRC_C) $(SRC_SUPERVISOR) $(SRC_COMMON_HAL_EXPANDED) $(SRC_SHARED_MODULE_EXPANDED) $(STM_SRC_C)
+SRC_QSTR += $(SRC_C) $(SRC_SUPERVISOR) $(SRC_COMMON_HAL_EXPANDED) $(SRC_SHARED_MODULE_EXPANDED) $(STM_SRC_C) $(SRC_CPP)
 # Sources that only hold QSTRs after pre-processing.
 SRC_QSTR_PREPROCESSOR += peripherals/samd/$(CHIP_FAMILY)/clocks.c
 

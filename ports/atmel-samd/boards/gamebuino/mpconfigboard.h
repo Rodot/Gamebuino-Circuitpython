@@ -36,3 +36,7 @@
 #define IGNORE_PIN_PB03     1
 #define IGNORE_PIN_PB22     1
 #define IGNORE_PIN_PB23     1
+
+extern const struct _mp_obj_module_t mp_module_gamebuino_meta;
+
+#define EXTRA_BUILTIN_MODULES { MP_OBJ_NEW_QSTR(MP_QSTR_gamebuino_meta), (mp_obj_t)&mp_module_gamebuino_meta },
