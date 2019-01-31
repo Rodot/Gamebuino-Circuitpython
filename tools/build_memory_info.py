@@ -28,10 +28,10 @@ import re
 import sys
 
 # Handle size constants with K or M suffixes (allowed in .ld but not in Python).
-K_PATTERN = re.compile(r'([0-9]+)K')
+K_PATTERN = re.compile(r'([0-9]+)[Kk]')
 K_REPLACE = r'(\1*1024)'
 
-M_PATTERN = re.compile(r'([0-9]+)M')
+M_PATTERN = re.compile(r'([0-9]+)[Mm]')
 M_REPLACE = r'(\1*1024*1024)'
 
 print()

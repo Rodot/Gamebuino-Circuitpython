@@ -245,8 +245,12 @@ extern const struct _mp_obj_module_t wiznet_module;
 extern const struct _mp_obj_module_t pixelbuf_module;
 #endif
 
+#ifndef OVERRIDE_BOARD_SMALL
+#define OVERRIDE_BOARD_SMALL 0
+#endif
+
 // Internal flash size dependent settings.
-#if BOARD_FLASH_SIZE > 192000
+#if BOARD_FLASH_SIZE > 192000 && OVERRIDE_BOARD_SMALL == 0
     #define MICROPY_PY_BUILTINS_STR_CENTER (1)
     #define MICROPY_PY_BUILTINS_STR_PARTITION (1)
     #define MICROPY_PY_BUILTINS_FROZENSET (1)

@@ -123,7 +123,7 @@ else
   CFLAGS += -flto
 endif
 
-CFLAGS += $(INC) -Wall -Werror -std=gnu11 -nostdlib $(BASE_CFLAGS) $(CFLAGS_MOD) $(COPT)
+CFLAGS += $(INC) -Wall -Werror -std=gnu11 -nostdlib $(BASE_CFLAGS) $(CFLAGS_MOD) $(COPT) -g
 
 ifeq ($(CHIP_FAMILY), samd21)
 CFLAGS += \
@@ -161,7 +161,7 @@ CFLAGS += -DMICROPY_MODULE_FROZEN_MPY
 CFLAGS += -Wno-error=lto-type-mismatch
 endif
 
-LDFLAGS = $(CFLAGS) -nostartfiles -fshort-enums -Wl,-nostdlib -Wl,-T,$(LD_FILE) -Wl,-Map=$@.map -Wl,-cref -Wl,-gc-sections -specs=nano.specs
+LDFLAGS = $(CFLAGS) -nostartfiles -fshort-enums -Wl,-nostdlib -Wl,-T,$(LD_FILE) -Wl,-Map=$@.map -Wl,-cref -Wl,-gc-sections -specs=nano.specs -g
 LIBS := -lgcc -lc
 
 # Use toolchain libm if we're not using our own.
