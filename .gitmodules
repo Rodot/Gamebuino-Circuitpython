@@ -86,3 +86,6 @@
 [submodule "tools/adabot"]
 	path = tools/adabot
 	url = https://github.com/adafruit/adabot.git
+[submodule "gamebuino-meta"]
+	path = ports/atmel-samd/modules/Gamebuino-Meta
+	url = https://github.com/Gamebuino/Gamebuino-Meta.git

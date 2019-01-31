@@ -6,7 +6,7 @@
 MEMORY
 {
     /* Leave 16KiB for the bootloader, and 16k for the flash file system. */
-    FLASH (rx) : ORIGIN = 0x00000000 + 16K, LENGTH = 256K - 16K - 0x4000
+    FLASH (rx) : ORIGIN = 0x00000000 + 16K, LENGTH = 256K - 16K - 0x8000
     RAM (xrw)  : ORIGIN = 0x20000000, LENGTH = 32K
 }
 
