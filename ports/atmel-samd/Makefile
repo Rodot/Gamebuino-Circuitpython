@@ -52,7 +52,8 @@ INC += -I. \
        -Ifreetouch \
        -I../../lib/tinyusb/src \
        -I../../supervisor/shared/usb \
-       -I$(BUILD)
+       -I$(BUILD) \
+       $(INC_EXTRA)
 
 BASE_CFLAGS = \
 	-fsingle-precision-constant \
@@ -79,7 +80,9 @@ BASE_CFLAGS = \
 	-DCIRCUITPY_SOFTWARE_SAFE_MODE=0x0ADABEEF \
 	-DCIRCUITPY_CANARY_WORD=0xADAF00 \
 	-DCIRCUITPY_SAFE_RESTART_WORD=0xDEADBEEF \
-	--param max-inline-insns-single=500
+	--param max-inline-insns-single=500 \
+	-fno-exceptions \
+	$(DEFINES_EXTRA)
 
 #        Use these flags to debug build times and header includes.
 #        -ftime-report
@@ -90,19 +93,20 @@ BASE_CFLAGS = \
 BASE_CPPFLAGS = \
 	-fsingle-precision-constant \
 	-fno-strict-aliasing \
-	-Wdouble-promotion \
 	-Wno-endif-labels \
 	-Werror-implicit-function-declaration \
 	-Wfloat-equal \
 	-Wundef \
-	-Wshadow \
 	-Wwrite-strings \
 	-Wsign-compare \
-	-Wmissing-format-attribute \
 	-Wno-deprecated-declarations \
 	-Wunreachable-code \
-	-Wcast-align \
 	-Wno-error=lto-type-mismatch \
+	-Wno-overflow \
+	-Wno-error=class-memaccess \
+	-Wno-error=float-equal \
+	-Wno-error=unused-variable \
+	-Wno-error=narrowing \
 	-D__$(CHIP_VARIANT)__ \
 	-ffunction-sections \
 	-fdata-sections \
@@ -110,7 +114,10 @@ BASE_CPPFLAGS = \
 	-DCIRCUITPY_SOFTWARE_SAFE_MODE=0x0ADABEEF \
 	-DCIRCUITPY_CANARY_WORD=0xADAF00 \
 	-DCIRCUITPY_SAFE_RESTART_WORD=0xDEADBEEF \
-	--param max-inline-insns-single=500
+	--param max-inline-insns-single=500 \
+	-u _printf_float \
+	-fno-exceptions \
+	$(DEFINES_EXTRA)
 
 ifeq ($(CHIP_FAMILY), samd21)
 CFLAGS += -Os -DNDEBUG
@@ -155,7 +162,7 @@ else
 endif
 
 CFLAGS += $(INC) -Wall -Werror -std=gnu11 -nostdlib $(BASE_CFLAGS) $(CFLAGS_MOD) $(COPT) -g
-CPPFLAGS += $(INC) -Wall -Werror -std=c++11 -nostdlib $(BASE_CPPFLAGS) $(CFLAGS_MOD) $(COPT) -g
+CPPFLAGS += $(INC) -Wall -Werror -std=gnu++11 -nostdlib $(BASE_CPPFLAGS) $(CFLAGS_MOD) $(COPT) -g
 
 ifeq ($(CHIP_FAMILY), samd21)
 CFLAGS += \
@@ -205,7 +212,7 @@ CPPFLAGS += -DMICROPY_MODULE_FROZEN_MPY
 CPPFLAGS += -Wno-error=lto-type-mismatch
 endif
 
-LDFLAGS = $(CFLAGS) -nostartfiles -fshort-enums -Wl,-nostdlib -Wl,-T,$(LD_FILE) -Wl,-Map=$@.map -Wl,-cref -Wl,-gc-sections -specs=nano.specs -g
+LDFLAGS = $(CFLAGS) -static -nostartfiles -ffreestanding -nostartfiles -fshort-enums -Wl,-nostdlib -Wl,-T,$(LD_FILE) -Wl,-Map=$@.map -Wl,-cref -Wl,-gc-sections -specs=nano.specs -g -lc -lnosys
 LIBS := -lgcc -lc
 
 # Use toolchain libm if we're not using our own.
@@ -327,9 +334,10 @@ SRC_C = \
 	lib/mp-readline/readline.c \
 	freetouch/adafruit_ptc.c \
 	supervisor/shared/memory.c \
-	common-hal/gamebuino-meta/__init__.c
+	$(SRC_C_EXTRA)
 
-SRC_CPP =	common-hal/gamebuino-meta/gamebuino-meta.cpp
+SRC_CPP = \
+	$(SRC_CPP_EXTRA)
 
 ifeq ($(MICROPY_PY_NETWORK),1)
 CFLAGS += -DMICROPY_PY_NETWORK=1
@@ -513,7 +521,7 @@ endif
 OBJ += $(addprefix $(BUILD)/, $(SRC_S:.s=.o))
 OBJ += $(addprefix $(BUILD)/, $(SRC_MOD:.c=.o))
 
-SRC_QSTR += $(SRC_C) $(SRC_SUPERVISOR) $(SRC_COMMON_HAL_EXPANDED) $(SRC_SHARED_MODULE_EXPANDED) $(STM_SRC_C) $(SRC_CPP)
+SRC_QSTR += $(SRC_C) $(SRC_CPP) $(SRC_SUPERVISOR) $(SRC_COMMON_HAL_EXPANDED) $(SRC_SHARED_MODULE_EXPANDED) $(STM_SRC_C)
 # Sources that only hold QSTRs after pre-processing.
 SRC_QSTR_PREPROCESSOR += peripherals/samd/$(CHIP_FAMILY)/clocks.c
 
@@ -521,7 +529,7 @@ all: $(BUILD)/firmware.bin $(BUILD)/firmware.uf2
 
 $(BUILD)/firmware.elf: $(OBJ)
 	$(STEPECHO) "LINK $@"
-	$(Q)$(CC) -o $@ $(LDFLAGS) $^ -Wl,--start-group $(LIBS) -Wl,--end-group
+	$(Q)$(CXX) -o $@ $(LDFLAGS) $^ -Wl,--start-group $(LIBS) -Wl,--end-group
 	$(Q)$(SIZE) $@ | $(PYTHON3) $(TOP)/tools/build_memory_info.py $(LD_FILE)
 
 $(BUILD)/firmware.bin: $(BUILD)/firmware.elf

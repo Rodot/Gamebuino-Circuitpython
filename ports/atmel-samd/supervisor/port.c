@@ -258,6 +258,7 @@ uint32_t port_get_saved_word(void) {
     return _ebss;
 }
 
+#ifndef NO_HARDFAULT_HANDLER
 /**
  * \brief Default interrupt handler for unused IRQs.
  */
@@ -274,3 +275,4 @@ __attribute__((used)) void HardFault_Handler(void)
         asm("nop;");
     }
 }
+#endif // NO_HARDFAULT_HANDLER

@@ -27,6 +27,7 @@
 #include "boards/board.h"
 #include "mpconfigboard.h"
 #include "hal/include/hal_gpio.h"
+#include "py/obj.h"
 #include <string.h>
 
 void board_init(void)
@@ -40,3 +41,16 @@ bool board_requests_safe_mode(void) {
 
 void reset_board(void) {
 }
+
+void shared_modules_random_seed(mp_uint_t);
+
+void pickRandomSeed(void) {
+    unsigned int seed = 42;
+    shared_modules_random_seed(seed);
+}
+
+void _exit(int status){while(1);}
+int _getpid(void){ return -1;}
+int _kill(int pid, int sig){ return -1;}
+int _write(void){return -1;}
+int __exidx_start(void){return -1;}
