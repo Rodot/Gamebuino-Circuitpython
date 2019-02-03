@@ -33,6 +33,7 @@
 #include "hal/include/hpl_spi_m_sync.h"
 #include "shared-bindings/busio/SPI.h"
 #include "shared-bindings/microcontroller/Pin.h"
+#include "samd/dma.h"
 #include "samd/sercom.h"
 #include <string.h>
 
@@ -120,10 +121,10 @@ void gamebuino_meta_tft_spi_transfer(uint8_t d) {
     common_hal_busio_spi_write(&spi_obj, &d, 1);
 }
 void gamebuino_meta_tft_send_buffer(uint16_t* buf, uint16_t size) {
-    common_hal_busio_spi_write(&spi_obj, (uint8_t*)buf, size*2);
+    sercom_dma_write_nowait(spi_obj.spi_desc.dev.prvt, (uint8_t*)buf, size*2);
 }
 void gamebuino_meta_tft_wait_for_transfers_done(void) {
-    // do nothing for now
+    sercom_dma_transfer_wait(spi_obj.spi_desc.dev.prvt);
 }
 void gamebuino_meat_tft_wait_for_desc_available(const uint32_t num) {
     gamebuino_meta_tft_wait_for_transfers_done();
