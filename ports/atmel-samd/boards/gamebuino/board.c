@@ -63,18 +63,8 @@ void gamebuino_meta_pick_random_seed(void) {
     shared_modules_random_seed(seed);
 }
 
-uint32_t membuff[(64*80*2 + 1024) / 4];
-uint32_t ramSize = 0;
-
-bool gamebuino_meta_is_inited(void);
-
 void* gb_malloc(size_t size) {
-    if (gamebuino_meta_is_inited()) {
-        return m_malloc(size, true);
-    }
-    void* ptr = (void*)(&membuff) + ramSize;
-    ramSize += (size + 3) / 4;
-    return ptr;
+    return m_malloc(size, true);
 }
 
 void gb_free(void* ptr) {

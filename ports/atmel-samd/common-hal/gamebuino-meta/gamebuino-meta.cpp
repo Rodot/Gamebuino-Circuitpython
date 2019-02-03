@@ -11,21 +11,21 @@ Gamebuino_Meta::Gamebuino* gb() {
 };
 
 extern "C" {
-
-int somevar = 42;
-
-void gambeuino_meta_test() {
-	memset(&somevar, 0, sizeof(somevar));
-}
-
+	
 void gamebuino_meta_begin() {
 	gb()->begin();
 }
 
-bool gamebuino_meta_is_inited() {
-//	init_gb_pointer();
-//	return gbptr->inited;
-	return true;
+bool gamebuino_meta_update() {
+	return gb()->update();
+}
+
+void gamebuino_meta_display_clear() {
+	gb()->display.clear();
+}
+
+void gamebuino_meta_display_println(const char* str) {
+	gb()->display.println(str);
 }
 
 } // extern "C"
