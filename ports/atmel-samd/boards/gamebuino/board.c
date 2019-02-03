@@ -44,8 +44,7 @@
 #define CS_BTN_H()   PORT->Group[BOARD_CS_BTN_PORT].OUT.reg |= (1UL<<BOARD_CS_BTN_PIN)
 #define CS_BTN_L()   PORT->Group[BOARD_CS_BTN_PORT].OUT.reg &= ~(1UL<<BOARD_CS_BTN_PIN)
 
-void board_init(void)
-{
+void board_init(void) {
     WDT->CTRL.bit.ENABLE = 0;
 }
 
@@ -53,7 +52,9 @@ bool board_requests_safe_mode(void) {
     return false;
 }
 
+void gamebuino_meta_reset(void);
 void reset_board(void) {
+    gamebuino_meta_reset();
 }
 
 void shared_modules_random_seed(mp_uint_t);
@@ -68,7 +69,7 @@ void* gb_malloc(size_t size) {
 }
 
 void gb_free(void* ptr) {
-    return m_free(ptr);
+    m_free(ptr);
 }
 
 busio_spi_obj_t spi_obj;
