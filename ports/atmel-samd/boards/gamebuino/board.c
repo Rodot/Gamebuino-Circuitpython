@@ -31,42 +31,21 @@
 #include "shared-bindings/microcontroller/Processor.h"
 #include "hal/include/hal_spi_m_sync.h"
 #include "hal/include/hpl_spi_m_sync.h"
+#include "shared-bindings/busio/SPI.h"
+#include "shared-bindings/microcontroller/Pin.h"
+#include "samd/sercom.h"
 #include <string.h>
-
-
-#define BOARD_MOSI_PORT                   (1)
-#define BOARD_MOSI_PIN                    (10)
-
-#define BOARD_MISO_PORT                   (0)
-#define BOARD_MISO_PIN                    (12)
-
-#define BOARD_SCK_PORT                    (1)
-#define BOARD_SCK_PIN                     (11)
 
 #define BOARD_CS_BTN_PORT                 (1)
 #define BOARD_CS_BTN_PIN                  (3)
 
-#define DO_INIT()  PORT->Group[BOARD_MISO_PORT].DIRCLR.reg = (1UL<<BOARD_MISO_PIN); PORT->Group[BOARD_MISO_PORT].PINCFG[BOARD_MISO_PIN].reg = PORT_PINCFG_INEN|PORT_PINCFG_PULLEN; PORT->Group[BOARD_MISO_PORT].OUTSET.reg = (1UL << BOARD_MISO_PIN)
-#define DO         (PORT->Group[BOARD_MISO_PORT].IN.reg & (1UL<<BOARD_MISO_PIN))
-
-#define DI_INIT()       PORT->Group[BOARD_MOSI_PORT].DIRSET.reg = (1UL<<BOARD_MOSI_PIN)
-#define DI_H()          PORT->Group[BOARD_MOSI_PORT].OUTSET.reg = (1UL<<BOARD_MOSI_PIN)
-#define DI_L()          PORT->Group[BOARD_MOSI_PORT].OUTCLR.reg = (1UL<<BOARD_MOSI_PIN)
-
-#define CK_INIT()       PORT->Group[BOARD_SCK_PORT].DIRSET.reg = (1UL<<BOARD_SCK_PIN)
-#define CK_H()          PORT->Group[BOARD_SCK_PORT].OUTSET.reg = (1UL<<BOARD_SCK_PIN)
-#define CK_L() PORT->Group[BOARD_SCK_PORT].OUTCLR.reg = (1UL<<BOARD_SCK_PIN)
-
 #define CS_BTN_INIT()   PORT->Group[BOARD_CS_BTN_PORT].DIRSET.reg = (1UL<<BOARD_CS_BTN_PIN)
-#define CS_BTN_H()   PORT->Group[BOARD_CS_BTN_PORT].OUTSET.reg = (1UL<<BOARD_CS_BTN_PIN)
-#define CS_BTN_L()   PORT->Group[BOARD_CS_BTN_PORT].OUTCLR.reg = (1UL<<BOARD_CS_BTN_PIN)
+#define CS_BTN_H()   PORT->Group[BOARD_CS_BTN_PORT].OUT.reg |= (1UL<<BOARD_CS_BTN_PIN)
+#define CS_BTN_L()   PORT->Group[BOARD_CS_BTN_PORT].OUT.reg &= ~(1UL<<BOARD_CS_BTN_PIN)
 
 void board_init(void)
 {
     WDT->CTRL.bit.ENABLE = 0;
-    DO_INIT();
-    DI_INIT();
-    CK_INIT();
 }
 
 bool board_requests_safe_mode(void) {
@@ -101,90 +80,47 @@ void gb_free(void* ptr) {
     return m_free(ptr);
 }
 
+busio_spi_obj_t spi_obj;
+bool inited_spi = false;
+void spi_init(void) {
+    if (inited_spi) {
+        return;
+    }
+    common_hal_busio_spi_construct(&spi_obj, &pin_PB11, &pin_PB10, &pin_PA12);
+    common_hal_busio_spi_never_reset(&spi_obj);
+    inited_spi = true;
+}
+
 // button functions
 void gamebuino_meta_buttons_init(void) {
-    DO_INIT();
-    DI_INIT();
-    CK_INIT();
+    spi_init();
     CS_BTN_INIT();
     CS_BTN_H();
 }
 uint8_t gamebuino_meta_buttons_update(void) {
     CS_BTN_L();
+    common_hal_busio_spi_configure(&spi_obj, 12000000, 0, 0, 8);
     uint8_t r;
-    r = 0;   if (DO) r++;   /* bit7 */
-    CK_H(); CK_L();
-    r <<= 1; if (DO) r++;   /* bit6 */
-    CK_H(); CK_L();
-    r <<= 1; if (DO) r++;   /* bit5 */
-    CK_H(); CK_L();
-    r <<= 1; if (DO) r++;   /* bit4 */
-    CK_H(); CK_L();
-    r <<= 1; if (DO) r++;   /* bit3 */
-    CK_H(); CK_L();
-    r <<= 1; if (DO) r++;   /* bit2 */
-    CK_H(); CK_L();
-    r <<= 1; if (DO) r++;   /* bit1 */
-    CK_H(); CK_L();
-    r <<= 1; if (DO) r++;   /* bit0 */
-    CK_H(); CK_L();
+    common_hal_busio_spi_read(&spi_obj, &r, 1, 0xFF);
     CS_BTN_H();
     return r;
 }
 
 // tft functions
 void gamebuino_meta_tft_spi_begin(void) {
-    /*
-    Sercom* sercom = SERCOM4;
-    uint8_t sercom_index = 4;
-    uint8_t clock_pad = 3;
-    uint8_t mosi_pad = 2;
-    uint8_t miso_pad = 0;
-    uint32_t mosi_pinmux = MUX_F;
-    uint32_t miso_pinmux = MUX_F;
-    uint32_t clock_pinmux = MUX_F;
-    uint8_t dopo = samd_peripherals_get_spi_dopo(clock_pad, mosi_pad);
-    samd_peripherals_sercom_clock_init(sercom, sercom_index);
-    spi_m_sync_descriptor spi_desc;
-    spi_m_sync_init(&spi_desc, sercom);
-    hri_sercomspi_write_CTRLA_DOPO_bf(sercom, dopo);
-    hri_sercomspi_write_CTRLA_DIPO_bf(sercom, miso_pad);
-    uint8_t baud_value = samd_peripherals_spi_baudrate_to_baud_reg_value(12000000);
-    spi_m_sync_set_baudrate(&spi_desc, baud_value)
-    */
-    DO_INIT();
-    DI_INIT();
-    CK_INIT();
+    spi_init();
 }
 void gamebuino_meta_tft_spi_begin_transaction(void) {
-    // do nothing for now
+    common_hal_busio_spi_configure(&spi_obj, 24000000, 0, 0, 8);
 }
 void gamebuino_meta_tft_spi_end_transaction(void) {
     // do nothing for now
 }
 void gamebuino_meta_tft_spi_transfer(uint8_t d) {
-    if (d & 0x80) DI_H(); else DI_L();      /* bit7 */
-    CK_H(); CK_L();
-    if (d & 0x40) DI_H(); else DI_L();      /* bit6 */
-    CK_H(); CK_L();
-    if (d & 0x20) DI_H(); else DI_L();      /* bit5 */
-    CK_H(); CK_L();
-    if (d & 0x10) DI_H(); else DI_L();      /* bit4 */
-    CK_H(); CK_L();
-    if (d & 0x08) DI_H(); else DI_L();      /* bit3 */
-    CK_H(); CK_L();
-    if (d & 0x04) DI_H(); else DI_L();      /* bit2 */
-    CK_H(); CK_L();
-    if (d & 0x02) DI_H(); else DI_L();      /* bit1 */
-    CK_H(); CK_L();
-    if (d & 0x01) DI_H(); else DI_L();      /* bit0 */
-    CK_H(); CK_L();
+    common_hal_busio_spi_write(&spi_obj, &d, 1);
 }
 void gamebuino_meta_tft_send_buffer(uint16_t* buf, uint16_t size) {
-    uint8_t* buff = (uint8_t*)buf;
-    for (uint32_t i = 0; i < size*2; i++) {
-        gamebuino_meta_tft_spi_transfer(buff[i]);
-    }
+    common_hal_busio_spi_write(&spi_obj, (uint8_t*)buf, size*2);
 }
 void gamebuino_meta_tft_wait_for_transfers_done(void) {
     // do nothing for now
