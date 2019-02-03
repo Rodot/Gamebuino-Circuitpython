@@ -115,8 +115,8 @@ BASE_CPPFLAGS = \
 	-DCIRCUITPY_CANARY_WORD=0xADAF00 \
 	-DCIRCUITPY_SAFE_RESTART_WORD=0xDEADBEEF \
 	--param max-inline-insns-single=500 \
-	-u _printf_float \
 	-fno-exceptions \
+	-fno-rtti \
 	$(DEFINES_EXTRA)
 
 ifeq ($(CHIP_FAMILY), samd21)
@@ -212,7 +212,7 @@ CPPFLAGS += -DMICROPY_MODULE_FROZEN_MPY
 CPPFLAGS += -Wno-error=lto-type-mismatch
 endif
 
-LDFLAGS = $(CFLAGS) -static -nostartfiles -ffreestanding -nostartfiles -fshort-enums -Wl,-nostdlib -Wl,-T,$(LD_FILE) -Wl,-Map=$@.map -Wl,-cref -Wl,-gc-sections -specs=nano.specs -g -lc -lnosys
+LDFLAGS = $(CFLAGS) -static -nostartfiles -ffreestanding -nostartfiles -fshort-enums -Wl,-nostdlib -Wl,-T,$(LD_FILE) -Wl,-Map=$@.map -Wl,-cref -Wl,-gc-sections -specs=nano.specs -specs=nosys.specs -g -lc -lnosys
 LIBS := -lgcc -lc
 
 # Use toolchain libm if we're not using our own.

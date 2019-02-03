@@ -36,7 +36,7 @@ def addDir(d, do_inc):
 for d, lib in SCAN_DIRS:
 	addDir(d + "/", lib)
 
-print("SRC_C_EXTRA_NOQSTR += \\")
+print("SRC_C_EXTRA += \\")
 for p in SRC_C:
 	print("\t" + p + " \\")
 print("\n")
