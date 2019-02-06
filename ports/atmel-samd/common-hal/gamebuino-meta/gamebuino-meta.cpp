@@ -155,6 +155,9 @@ void gamebuino_meta_begin() {
 bool gamebuino_meta_update() {
 	return gb()->update();
 }
+void gamebuino_meta_wait_for_update() {
+	gb()->waitForUpdate();
+}
 void gamebuino_meta_update_display() {
 	return gb()->updateDisplay();
 }

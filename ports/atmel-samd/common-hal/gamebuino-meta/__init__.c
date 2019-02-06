@@ -348,6 +348,7 @@ const mp_obj_module_t mp_module_gamebuino_meta_color = {
 
 void gamebuino_meta_begin(void);
 bool gamebuino_meta_update(void);
+void gamebuino_meta_wait_for_update(void);
 void gamebuino_meta_update_display(void);
 void gamebuino_meta_set_frame_rate(uint8_t fps);
 uint8_t gamebuino_meta_get_cpu_load(void);
@@ -357,6 +358,9 @@ STATIC MP_DEFINE_CONST_FUN_OBJ_0(gbm_begin_obj, gbm_begin);
 
 STATIC mp_obj_t gbm_update(void) { return mp_obj_new_bool(gamebuino_meta_update()); }
 STATIC MP_DEFINE_CONST_FUN_OBJ_0(gbm_update_obj, gbm_update);
+
+STATIC mp_obj_t gbm_wait_for_update(void) { gamebuino_meta_wait_for_update(); return mp_const_none; }
+STATIC MP_DEFINE_CONST_FUN_OBJ_0(gbm_wait_for_update_obj, gbm_wait_for_update);
 
 STATIC mp_obj_t gbm_update_display(void) { gamebuino_meta_update_display(); return mp_const_none; }
 STATIC MP_DEFINE_CONST_FUN_OBJ_0(gbm_update_display_obj, gbm_update_display);
@@ -380,6 +384,7 @@ STATIC const mp_map_elem_t gbm_globals_table[] = {
     
     { MP_OBJ_NEW_QSTR(MP_QSTR_begin), (mp_obj_t)&gbm_begin_obj },
     { MP_OBJ_NEW_QSTR(MP_QSTR_update), (mp_obj_t)&gbm_update_obj },
+    { MP_OBJ_NEW_QSTR(MP_QSTR_waitForUpdate), (mp_obj_t)&gbm_wait_for_update_obj },
     { MP_OBJ_NEW_QSTR(MP_QSTR_updateDisplay), (mp_obj_t)&gbm_update_display_obj },
     { MP_OBJ_NEW_QSTR(MP_QSTR_setFrameRate), (mp_obj_t)&gbm_set_frame_rate_obj },
     { MP_OBJ_NEW_QSTR(MP_QSTR_getCpuLoad), (mp_obj_t)&gbm_get_cpu_load_obj },
