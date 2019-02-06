@@ -35,6 +35,10 @@
 #include "shared-bindings/microcontroller/Pin.h"
 #include "samd/dma.h"
 #include "samd/sercom.h"
+#include "supervisor/shared/stack.h"
+#include "supervisor/filesystem.h"
+#include "supervisor/shared/autoreload.h"
+#include "supervisor/port.h"
 #include <string.h>
 
 #define BOARD_CS_BTN_PORT                 (1)
@@ -53,8 +57,30 @@ bool board_requests_safe_mode(void) {
 }
 
 void gamebuino_meta_reset(void);
+void gamebuino_meta_begin(void);
+void gamebuino_meta_titlescreen(void);
+void start_mp(supervisor_allocation* heap);
+void stop_mp(void);
+bool firstReset = true;
 void reset_board(void) {
-    gamebuino_meta_reset();
+    if (firstReset) {
+        stack_resize();
+        filesystem_flush();
+        supervisor_allocation* heap = allocate_remaining_memory();
+        start_mp(heap);
+        autoreload_suspend();
+        
+        // code here
+        gamebuino_meta_begin();
+        gamebuino_meta_titlescreen();
+        
+        reset_port();
+//        reset_board();
+        gamebuino_meta_reset();
+        stop_mp();
+        free_memory(heap);
+    }
+    firstReset = false;
 }
 
 void shared_modules_random_seed(mp_uint_t);
@@ -150,9 +176,7 @@ uint32_t micros(void) {
     return ((count+pend) * 1000) + (((SysTick->LOAD  - ticks)*(1048576/(common_hal_mcu_processor_get_frequency()/1000000)))>>20) ;
 }
 
-static void __empty(void) {}
-void yield(void) __attribute__ ((weak, alias("__empty")));
-
+void yield(void);
 void delay(uint32_t ms) {
     if (ms == 0) {
         return;
