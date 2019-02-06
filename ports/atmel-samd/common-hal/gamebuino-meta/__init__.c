@@ -6,13 +6,28 @@
 #include "py/objint.h"
 
 void gamebuino_meta_display_clear(void);
+void gamebuino_meta_display_clear_color(const uint16_t);
+void gamebuino_meta_display_fill(void);
+void gamebuino_meta_display_fill_color(const uint16_t);
 void gamebuino_meta_display_print_int(const int str);
+void gamebuino_meta_display_print_int_xy(const int16_t, const int16_t, const int str);
 void gamebuino_meta_display_print(const char* str);
+void gamebuino_meta_display_print_xy(const int16_t, const int16_t, const char* str);
 void gamebuino_meta_display_println_int(const int str);
+void gamebuino_meta_display_println_int_xy(const int16_t, const int16_t, const int str);
 void gamebuino_meta_display_println(const char* str);
+void gamebuino_meta_display_println_xy(const int16_t, const int16_t, const char* str);
 void gamebuino_meta_display_draw_line(int16_t x0, int16_t y0, int16_t x1, int16_t y1);
 void gamebuino_meta_display_draw_rect(int16_t x, int16_t y, int16_t w, int16_t h);
 void gamebuino_meta_display_fill_rect(int16_t x, int16_t y, int16_t w, int16_t h);
+void gamebuino_meta_display_draw_pixel(int16_t, int16_t);
+void gamebuino_meta_display_draw_pixel_color(int16_t, int16_t, int16_t);
+void gamebuino_meta_display_draw_circle(int16_t, int16_t, int16_t);
+void gamebuino_meta_display_fill_circle(int16_t, int16_t, int16_t);
+void gamebuino_meta_display_draw_triangle(int16_t, int16_t, int16_t, int16_t, int16_t, int16_t);
+void gamebuino_meta_display_fill_triangle(int16_t, int16_t, int16_t, int16_t, int16_t, int16_t);
+void gamebuino_meta_display_draw_round_rect(int16_t, int16_t, int16_t, int16_t, int16_t);
+void gamebuino_meta_display_fill_round_rect(int16_t, int16_t, int16_t, int16_t, int16_t);
 void gamebuino_meta_display_set_color(uint16_t c);
 
 STATIC mp_obj_t gbm_loader(void) {
@@ -21,28 +36,61 @@ STATIC mp_obj_t gbm_loader(void) {
 }
 STATIC MP_DEFINE_CONST_FUN_OBJ_0(gbm_loader_obj, gbm_loader);
 
-STATIC mp_obj_t gbm_display_clear(void) { gamebuino_meta_display_clear(); return mp_const_none; } 
-STATIC MP_DEFINE_CONST_FUN_OBJ_0(gbm_display_clear_obj, gbm_display_clear);
-
-STATIC mp_obj_t gbm_display_print(mp_obj_t str) {
-    if (MP_OBJ_IS_INT(str)) {
-        gamebuino_meta_display_print_int(mp_obj_get_int(str));
+STATIC mp_obj_t gbm_display_clear(size_t n_args, const mp_obj_t *args) {
+    if (n_args == 0) {
+        gamebuino_meta_display_clear();
     } else {
-        gamebuino_meta_display_print(mp_obj_str_get_str(str));
+        gamebuino_meta_display_clear_color(mp_obj_get_int(args[0]));
     }
     return mp_const_none;
 }
-STATIC MP_DEFINE_CONST_FUN_OBJ_1(gbm_display_print_obj, gbm_display_print);
+STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(gbm_display_clear_obj, 0, 1, gbm_display_clear);
 
-STATIC mp_obj_t gbm_display_println(mp_obj_t str) {
-    if (MP_OBJ_IS_INT(str)) {
-        gamebuino_meta_display_println_int(mp_obj_get_int(str));
+STATIC mp_obj_t gbm_display_fill(size_t n_args, const mp_obj_t *args) {
+    if (n_args == 0) {
+        gamebuino_meta_display_fill();
     } else {
-        gamebuino_meta_display_println(mp_obj_str_get_str(str));
+        gamebuino_meta_display_fill_color(mp_obj_get_int(args[0]));
     }
     return mp_const_none;
 }
-STATIC MP_DEFINE_CONST_FUN_OBJ_1(gbm_display_println_obj, gbm_display_println);
+STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(gbm_display_fill_obj, 0, 1, gbm_display_fill);
+
+STATIC mp_obj_t gbm_display_print(size_t n_args, const mp_obj_t *args) {
+    if (n_args == 3) {
+        if (MP_OBJ_IS_INT(args[2])) {
+            gamebuino_meta_display_print_int_xy(mp_obj_get_int(args[0]), mp_obj_get_int(args[1]), mp_obj_get_int(args[2]));
+        } else {
+            gamebuino_meta_display_print_xy(mp_obj_get_int(args[0]), mp_obj_get_int(args[1]), mp_obj_str_get_str(args[2]));
+        }
+    } else if (n_args == 1) {
+        if (MP_OBJ_IS_INT(args[0])) {
+            gamebuino_meta_display_print_int(mp_obj_get_int(args[0]));
+        } else {
+            gamebuino_meta_display_print(mp_obj_str_get_str(args[0]));
+        }
+    }
+    return mp_const_none;
+}
+STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(gbm_display_print_obj, 1, 3, gbm_display_print);
+
+STATIC mp_obj_t gbm_display_println(size_t n_args, const mp_obj_t *args) {
+    if (n_args == 3) {
+        if (MP_OBJ_IS_INT(args[2])) {
+            gamebuino_meta_display_println_int_xy(mp_obj_get_int(args[0]), mp_obj_get_int(args[1]), mp_obj_get_int(args[2]));
+        } else {
+            gamebuino_meta_display_println_xy(mp_obj_get_int(args[0]), mp_obj_get_int(args[1]), mp_obj_str_get_str(args[2]));
+        }
+    } else if (n_args == 1) {
+        if (MP_OBJ_IS_INT(args[0])) {
+            gamebuino_meta_display_println_int(mp_obj_get_int(args[0]));
+        } else {
+            gamebuino_meta_display_println(mp_obj_str_get_str(args[0]));
+        }
+    }
+    return mp_const_none;
+}
+STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(gbm_display_println_obj, 1, 3, gbm_display_println);
 
 STATIC mp_obj_t gbm_display_draw_line(size_t n_args, const mp_obj_t *args) {
     gamebuino_meta_display_draw_line(mp_obj_get_int(args[0]), mp_obj_get_int(args[1]), mp_obj_get_int(args[2]), mp_obj_get_int(args[3]));
@@ -62,6 +110,52 @@ STATIC mp_obj_t gbm_display_fill_rect(size_t n_args, const mp_obj_t *args) {
 }
 STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(gbm_display_fill_rect_obj, 4, 4, gbm_display_fill_rect);
 
+STATIC mp_obj_t gbm_display_draw_pixel(size_t n_args, const mp_obj_t *args) {
+    if (n_args == 2) {
+        gamebuino_meta_display_draw_pixel(mp_obj_get_int(args[0]), mp_obj_get_int(args[1]));
+    } else {
+        gamebuino_meta_display_draw_pixel_color(mp_obj_get_int(args[0]), mp_obj_get_int(args[1]), mp_obj_get_int(args[2]));
+    }
+    return mp_const_none;
+}
+STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(gbm_display_draw_pixel_obj, 2, 3, gbm_display_draw_pixel);
+
+STATIC mp_obj_t gbm_display_draw_circle(mp_obj_t x, mp_obj_t y, mp_obj_t r) {
+    gamebuino_meta_display_draw_circle(mp_obj_get_int(x), mp_obj_get_int(y), mp_obj_get_int(r));
+    return mp_const_none;
+}
+STATIC MP_DEFINE_CONST_FUN_OBJ_3(gbm_display_draw_circle_obj, gbm_display_draw_circle);
+
+STATIC mp_obj_t gbm_display_fill_circle(mp_obj_t x, mp_obj_t y, mp_obj_t r) {
+    gamebuino_meta_display_fill_circle(mp_obj_get_int(x), mp_obj_get_int(y), mp_obj_get_int(r));
+    return mp_const_none;
+}
+STATIC MP_DEFINE_CONST_FUN_OBJ_3(gbm_display_fill_circle_obj, gbm_display_fill_circle);
+
+STATIC mp_obj_t gbm_display_draw_triangle(size_t n_args, const mp_obj_t *args) {
+    gamebuino_meta_display_draw_triangle(mp_obj_get_int(args[0]), mp_obj_get_int(args[1]), mp_obj_get_int(args[2]), mp_obj_get_int(args[3]), mp_obj_get_int(args[4]), mp_obj_get_int(args[5]));
+    return mp_const_none;
+}
+STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(gbm_display_draw_triangle_obj, 6, 6, gbm_display_draw_triangle);
+
+STATIC mp_obj_t gbm_display_fill_triangle(size_t n_args, const mp_obj_t *args) {
+    gamebuino_meta_display_fill_triangle(mp_obj_get_int(args[0]), mp_obj_get_int(args[1]), mp_obj_get_int(args[2]), mp_obj_get_int(args[3]), mp_obj_get_int(args[4]), mp_obj_get_int(args[5]));
+    return mp_const_none;
+}
+STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(gbm_display_fill_triangle_obj, 6, 6, gbm_display_fill_triangle);
+
+STATIC mp_obj_t gbm_display_draw_round_rect(size_t n_args, const mp_obj_t *args) {
+    gamebuino_meta_display_draw_round_rect(mp_obj_get_int(args[0]), mp_obj_get_int(args[1]), mp_obj_get_int(args[2]), mp_obj_get_int(args[3]), mp_obj_get_int(args[4]));
+    return mp_const_none;
+}
+STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(gbm_display_draw_round_rect_obj, 5, 5, gbm_display_draw_round_rect);
+
+STATIC mp_obj_t gbm_display_fill_round_rect(size_t n_args, const mp_obj_t *args) {
+    gamebuino_meta_display_fill_round_rect(mp_obj_get_int(args[0]), mp_obj_get_int(args[1]), mp_obj_get_int(args[2]), mp_obj_get_int(args[3]), mp_obj_get_int(args[4]));
+    return mp_const_none;
+}
+STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(gbm_display_fill_round_rect_obj, 5, 5, gbm_display_fill_round_rect);
+
 STATIC mp_obj_t gbm_display_set_color(mp_obj_t c) {
     gamebuino_meta_display_set_color(mp_obj_get_int(c)); return mp_const_none;
 }
@@ -69,11 +163,19 @@ STATIC MP_DEFINE_CONST_FUN_OBJ_1(gbm_display_set_color_obj, gbm_display_set_colo
 
 STATIC const mp_map_elem_t gbm_display_table[] = {
     { MP_OBJ_NEW_QSTR(MP_QSTR_clear), (mp_obj_t)&gbm_display_clear_obj },
+    { MP_OBJ_NEW_QSTR(MP_QSTR_fill), (mp_obj_t)&gbm_display_fill_obj },
     { MP_OBJ_NEW_QSTR(MP_QSTR_print), (mp_obj_t)&gbm_display_print_obj },
     { MP_OBJ_NEW_QSTR(MP_QSTR_println), (mp_obj_t)&gbm_display_println_obj },
     { MP_OBJ_NEW_QSTR(MP_QSTR_drawLine), (mp_obj_t)&gbm_display_draw_line_obj },
     { MP_OBJ_NEW_QSTR(MP_QSTR_drawRect), (mp_obj_t)&gbm_display_draw_rect_obj },
     { MP_OBJ_NEW_QSTR(MP_QSTR_fillRect), (mp_obj_t)&gbm_display_fill_rect_obj },
+    { MP_OBJ_NEW_QSTR(MP_QSTR_drawPixel), (mp_obj_t)&gbm_display_draw_pixel_obj },
+    { MP_OBJ_NEW_QSTR(MP_QSTR_drawCircle), (mp_obj_t)&gbm_display_draw_circle_obj },
+    { MP_OBJ_NEW_QSTR(MP_QSTR_fillCircle), (mp_obj_t)&gbm_display_fill_circle_obj },
+    { MP_OBJ_NEW_QSTR(MP_QSTR_drawTriangle), (mp_obj_t)&gbm_display_draw_triangle_obj },
+    { MP_OBJ_NEW_QSTR(MP_QSTR_fillTriangle), (mp_obj_t)&gbm_display_fill_triangle_obj },
+    { MP_OBJ_NEW_QSTR(MP_QSTR_drawRoundRect), (mp_obj_t)&gbm_display_draw_round_rect_obj },
+    { MP_OBJ_NEW_QSTR(MP_QSTR_fillRoundRect), (mp_obj_t)&gbm_display_fill_round_rect_obj },
     { MP_OBJ_NEW_QSTR(MP_QSTR_setColor), (mp_obj_t)&gbm_display_set_color_obj },
 };
 STATIC MP_DEFINE_CONST_DICT (
