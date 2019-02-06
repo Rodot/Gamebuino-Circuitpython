@@ -1,5 +1,12 @@
 #include <string.h>
 #include <Gamebuino-Meta.h>
+#include "common-hal/analogio/AnalogOut.h"
+
+extern "C" {
+void common_hal_analogio_analogout_construct(analogio_analogout_obj_t* self, const mcu_pin_obj_t *pin);
+void common_hal_analogio_analogout_set_value(analogio_analogout_obj_t *self,
+        uint16_t value);
+}
 
 Gamebuino_Meta::Gamebuino* ptr = nullptr;
 Gamebuino_Meta::Gamebuino* gb() {
@@ -89,6 +96,31 @@ void gamebuino_meta_display_set_color(uint16_t c) {
 	gb()->display.setColor((Gamebuino_Meta::Color)c);
 }
 
+void gamebuino_meta_lights_clear() {
+	gb()->lights.clear();
+}
+void gamebuino_meta_lights_clear_color(const uint16_t c) {
+	gb()->lights.clear((Gamebuino_Meta::Color)c);
+}
+void gamebuino_meta_lights_fill() {
+	gb()->lights.fill();
+}
+void gamebuino_meta_lights_fill_color(const uint16_t c) {
+	gb()->lights.fill((Gamebuino_Meta::Color)c);
+}
+void gamebuino_meta_lights_draw_pixel(int16_t x, int16_t y) {
+	gb()->lights.drawPixel(x, y);
+}
+void gamebuino_meta_lights_draw_pixel_color(int16_t x, int16_t y, uint16_t c) {
+	gb()->lights.drawPixel(x, y, (Gamebuino_Meta::Color)c);
+}
+void gamebuino_meta_lights_fill_rect(int16_t x, int16_t y, int16_t w, int16_t h) {
+	gb()->lights.fillRect(x, y, w, h);
+}
+void gamebuino_meta_lights_set_color(uint16_t c) {
+	gb()->lights.setColor((Gamebuino_Meta::Color)c);
+}
+
 const uint8_t gbm_BUTTON_DOWN = (const uint8_t)BUTTON_DOWN;
 const uint8_t gbm_BUTTON_LEFT = (const uint8_t)BUTTON_LEFT;
 const uint8_t gbm_BUTTON_RIGHT = (const uint8_t)BUTTON_RIGHT;
@@ -113,8 +145,12 @@ uint16_t gamebuino_meta_buttons_time_held(uint8_t b) {
 	return gb()->buttons.timeHeld((Gamebuino_Meta::Button)b);
 }
 
+analogio_analogout_obj_t sound_pin;
 void gamebuino_meta_begin() {
 	gb()->begin();
+	hri_dac_write_CTRLA_ENABLE_bit(DAC, false);
+	common_hal_analogio_analogout_construct(&sound_pin, &pin_PA02);
+	common_hal_analogio_analogout_set_value(&sound_pin, 0);
 }
 bool gamebuino_meta_update() {
 	return gb()->update();

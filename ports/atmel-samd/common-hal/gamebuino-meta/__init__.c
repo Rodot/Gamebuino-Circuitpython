@@ -187,6 +187,72 @@ const mp_obj_module_t mp_module_gamebuino_meta_display = {
     .globals = (mp_obj_dict_t*)&mp_dict_gamebuino_meta_display,
 };
 
+void gamebuino_meta_lights_clear(void);
+void gamebuino_meta_lights_clear_color(const uint16_t);
+void gamebuino_meta_lights_fill(void);
+void gamebuino_meta_lights_fill_color(const uint16_t);
+void gamebuino_meta_lights_draw_pixel(int16_t, int16_t);
+void gamebuino_meta_lights_draw_pixel_color(int16_t, int16_t, uint16_t);
+void gamebuino_meta_lights_fill_rect(int16_t, int16_t, int16_t, int16_t);
+void gamebuino_meta_lights_set_color(uint16_t);
+
+STATIC mp_obj_t gbm_lights_clear(size_t n_args, const mp_obj_t *args) {
+    if (n_args == 0) {
+        gamebuino_meta_lights_clear();
+    } else {
+        gamebuino_meta_lights_clear_color(mp_obj_get_int(args[0]));
+    }
+    return mp_const_none;
+}
+STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(gbm_lights_clear_obj, 0, 1, gbm_lights_clear);
+
+STATIC mp_obj_t gbm_lights_fill(size_t n_args, const mp_obj_t *args) {
+    if (n_args == 0) {
+        gamebuino_meta_lights_fill();
+    } else {
+        gamebuino_meta_lights_fill_color(mp_obj_get_int(args[0]));
+    }
+    return mp_const_none;
+}
+STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(gbm_lights_fill_obj, 0, 1, gbm_lights_fill);
+
+STATIC mp_obj_t gbm_lights_fill_rect(size_t n_args, const mp_obj_t *args) {
+    gamebuino_meta_lights_fill_rect(mp_obj_get_int(args[0]), mp_obj_get_int(args[1]), mp_obj_get_int(args[2]), mp_obj_get_int(args[3]));
+    return mp_const_none;
+}
+STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(gbm_lights_fill_rect_obj, 4, 4, gbm_lights_fill_rect);
+
+STATIC mp_obj_t gbm_lights_draw_pixel(size_t n_args, const mp_obj_t *args) {
+    if (n_args == 2) {
+        gamebuino_meta_lights_draw_pixel(mp_obj_get_int(args[0]), mp_obj_get_int(args[1]));
+    } else {
+        gamebuino_meta_lights_draw_pixel_color(mp_obj_get_int(args[0]), mp_obj_get_int(args[1]), mp_obj_get_int(args[2]));
+    }
+    return mp_const_none;
+}
+STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(gbm_lights_draw_pixel_obj, 2, 3, gbm_lights_draw_pixel);
+
+STATIC mp_obj_t gbm_lights_set_color(mp_obj_t c) {
+    gamebuino_meta_lights_set_color(mp_obj_get_int(c)); return mp_const_none;
+}
+STATIC MP_DEFINE_CONST_FUN_OBJ_1(gbm_lights_set_color_obj, gbm_lights_set_color);
+
+STATIC const mp_map_elem_t gbm_lights_table[] = {
+    { MP_OBJ_NEW_QSTR(MP_QSTR_clear), (mp_obj_t)&gbm_lights_clear_obj },
+    { MP_OBJ_NEW_QSTR(MP_QSTR_fill), (mp_obj_t)&gbm_lights_fill_obj },
+    { MP_OBJ_NEW_QSTR(MP_QSTR_fillRect), (mp_obj_t)&gbm_lights_fill_rect_obj },
+    { MP_OBJ_NEW_QSTR(MP_QSTR_drawPixel), (mp_obj_t)&gbm_lights_draw_pixel_obj },
+    { MP_OBJ_NEW_QSTR(MP_QSTR_setColor), (mp_obj_t)&gbm_lights_set_color_obj },
+};
+STATIC MP_DEFINE_CONST_DICT (
+    mp_dict_gamebuino_meta_lights,
+    gbm_lights_table
+);
+const mp_obj_module_t mp_module_gamebuino_meta_lights = {
+    .base = { &mp_type_module },
+    .globals = (mp_obj_dict_t*)&mp_dict_gamebuino_meta_lights,
+};
+
 /*
 extern const uint8_t gbm_BUTTON_DOWN;
 extern const uint8_t gbm_BUTTON_LEFT;
@@ -320,6 +386,7 @@ STATIC const mp_map_elem_t gbm_globals_table[] = {
     { MP_OBJ_NEW_QSTR(MP_QSTR_getFreeRam), (mp_obj_t)&gbm_get_free_ram_obj },
     
     { MP_OBJ_NEW_QSTR(MP_QSTR_display), (mp_obj_t)&mp_module_gamebuino_meta_display },
+    { MP_OBJ_NEW_QSTR(MP_QSTR_lights), (mp_obj_t)&mp_module_gamebuino_meta_lights },
     { MP_OBJ_NEW_QSTR(MP_QSTR_buttons), (mp_obj_t)&mp_module_gamebuino_meta_buttons },
     { MP_OBJ_NEW_QSTR(MP_QSTR_color), (mp_obj_t)&mp_module_gamebuino_meta_color },
 };
