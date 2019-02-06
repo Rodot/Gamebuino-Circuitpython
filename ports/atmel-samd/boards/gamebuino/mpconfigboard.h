@@ -1,7 +1,7 @@
 #define MICROPY_HW_BOARD_NAME "Gamebuino"
 #define MICROPY_HW_MCU_NAME "samd21g18"
 
-#define MICROPY_HW_LED_STATUS   (&pin_PA17)
+//#define MICROPY_HW_LED_STATUS   (&pin_PA17)
 
 //#define MICROPY_HW_LED_TX   &pin_PA27
 //#define MICROPY_HW_LED_RX   &pin_PB03
@@ -36,6 +36,12 @@
 #define IGNORE_PIN_PB03     1
 #define IGNORE_PIN_PB22     1
 #define IGNORE_PIN_PB23     1
+
+// skip audio and neopixels pin
+#define IGNORE_PIN_PA13     1
+//#define IGNORE_PIN_PA02     1
+
+// #define TC5_IN_USE
 
 extern const struct _mp_obj_module_t mp_module_gamebuino_meta;
 

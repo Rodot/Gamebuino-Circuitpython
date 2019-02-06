@@ -39,6 +39,7 @@
 #include "supervisor/filesystem.h"
 #include "supervisor/shared/autoreload.h"
 #include "supervisor/port.h"
+#include "supervisor/shared/board_busses.h"
 #include <string.h>
 
 #define BOARD_CS_BTN_PORT                 (1)
@@ -68,19 +69,20 @@ void reset_board(void) {
         filesystem_flush();
         supervisor_allocation* heap = allocate_remaining_memory();
         start_mp(heap);
-        autoreload_suspend();
         
         // code here
         gamebuino_meta_begin();
         gamebuino_meta_titlescreen();
         
-        reset_port();
-//        reset_board();
-        gamebuino_meta_reset();
         stop_mp();
         free_memory(heap);
+        reset_port();
+        reset_board_busses();
+//        reset_board();
+        gamebuino_meta_reset();
     }
     firstReset = false;
+    gamebuino_meta_reset();
 }
 
 void shared_modules_random_seed(mp_uint_t);
