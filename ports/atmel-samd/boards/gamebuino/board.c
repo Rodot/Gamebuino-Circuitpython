@@ -126,9 +126,73 @@ uint8_t gamebuino_meta_buttons_update(void) {
     return r;
 }
 
+/*
+#define DMA_DESC_COUNT (3)
+uint8_t next_desc_channel = 0;
+volatile uint32_t dma_desc_free_count = DMA_DESC_COUNT;
+void DMAC_Handler(void) {
+    __disable_irq();
+    uint8_t channel = DMAC->INTPEND.bit.ID;
+    if (channel >= DMA_DESC_COUNT) {
+        __enable_irq();
+        return;
+    }
+    DMAC->CHID.bit.ID = channel;
+    uint8_t flags = DMAC->CHINTFLAG.reg;
+    if (flags & DMAC_CHINTENCLR_TERR) {
+        // error
+        DMAC->CHINTFLAG.reg = DMAC_CHINTENCLR_TERR;
+    } else if(flags & DMAC_CHINTENCLR_TCMPL) {
+        // complete
+        DMAC->CHINTFLAG.reg = DMAC_CHINTENCLR_TCMPL;
+        dma_desc_free_count++;
+        if (dma_desc_free_count < DMA_DESC_COUNT-1) {
+            DMAC->CHCTRLB.reg |= DMAC_CHCTRLB_CMD_RESUME;
+        }
+    } else if (flags & DMAC_CHINTENCLR_SUSP) {
+        // suspend
+        DMAC->CHINTFLAG.reg = DMAC_CHINTENCLR_SUSP;
+        if (dma_desc_free_count < DMA_DESC_COUNT) {
+            DMAC->CHCTRLB.reg |= DMAC_CHCTRLB_CMD_RESUME;
+        }
+    }
+    __enable_irq();
+}
+*/
 // tft functions
 void gamebuino_meta_tft_spi_begin(void) {
     spi_init();
+    /*
+    next_desc_channel = 0;
+    for (uint8_t i = 0; i < DMA_DESC_COUNT; i++) {
+        DmacDescriptor* desc = dma_descriptor(i);
+        bool stepSel = false;
+        uint32_t stepSize = 0;
+        desc->BTCTRL.bit.VALID    = true;
+        desc->BTCTRL.bit.EVOSEL   = 0;
+        desc->BTCTRL.bit.BLOCKACT = 0;
+        desc->BTCTRL.bit.BEATSIZE = 0;
+        desc->BTCTRL.bit.SRCINC   = true;
+        desc->BTCTRL.bit.DSTINC   = false;
+        desc->BTCTRL.bit.STEPSEL  = stepSel;
+        desc->BTCTRL.bit.STEPSIZE = stepSize;
+        desc->BTCNT.reg           = 0;
+        desc->SRCADDR.reg         = 0;
+        
+        desc->DSTADDR.reg         = (uint32_t)(void *)(SERCOM4->SPI.DATA.reg);
+        desc->DESCADDR.reg        = (uint32_t)dma_descriptor((i+1)%DMA_DESC_COUNT);
+        
+        DMAC->CHID.bit.ID         = i;
+        DMAC->CHCTRLA.bit.ENABLE  = 0;
+        DMAC->CHCTRLA.bit.SWRST   = 1;
+        DMAC->SWTRIGCTRL.reg     &= (uint32_t)(~(1ul << i));
+        DMAC->CHCTRLB.bit.LVL     = 0;
+        DMAC->CHCTRLB.bit.TRIGSRC = 0x0A;
+        DMAC->CHCTRLB.bit.TRIGACT = DMAC_CHCTRLB_TRIGACT_BEAT_Val;
+    }
+    NVIC_EnableIRQ(DMAC_IRQn);
+    NVIC_SetPriority(DMAC_IRQn, (1 << __NVIC_PRIO_BITS) - 1);
+    */
 }
 void gamebuino_meta_tft_spi_begin_transaction(void) {
     common_hal_busio_spi_configure(&spi_obj, 24000000, 0, 0, 8);
@@ -139,14 +203,53 @@ void gamebuino_meta_tft_spi_end_transaction(void) {
 void gamebuino_meta_tft_spi_transfer(uint8_t d) {
     common_hal_busio_spi_write(&spi_obj, &d, 1);
 }
-void gamebuino_meta_tft_send_buffer(uint16_t* buf, uint16_t size) {
-    sercom_dma_write_nowait(spi_obj.spi_desc.dev.prvt, (uint8_t*)buf, size*2);
-}
 void gamebuino_meta_tft_wait_for_transfers_done(void) {
+    //while (dma_desc_free_count < DMA_DESC_COUNT);
     sercom_dma_transfer_wait(spi_obj.spi_desc.dev.prvt);
 }
 void gamebuino_meat_tft_wait_for_desc_available(const uint32_t num) {
+    //while (dma_desc_free_count < num);
     gamebuino_meta_tft_wait_for_transfers_done();
+}
+void gamebuino_meta_tft_send_buffer(uint16_t* buf, uint16_t size) {
+//    common_hal_busio_spi_write(&spi_obj, (uint8_t*)buf, size*2);
+    sercom_dma_write_nowait(spi_obj.spi_desc.dev.prvt, (uint8_t*)buf, size*2);
+    /*
+    bool start = false;
+    uint32_t count = size*2;
+    void* src = buf;
+    
+    gamebuino_meat_tft_wait_for_desc_available(1);
+    // change descriptor
+    DmacDescriptor* desc = dma_descriptor(next_desc_channel);
+    // from adafruit zerodma
+    uint8_t bytesPerBeat = 1; // Beat transfer size IN BYTES
+    if(count) desc->BTCNT.reg = count;
+    desc->SRCADDR.reg = (uint32_t)src;
+    if(desc->BTCTRL.bit.SRCINC){
+        if(desc->BTCTRL.bit.STEPSEL) desc->SRCADDR.reg += desc->BTCNT.reg * bytesPerBeat * (1<<desc->BTCTRL.bit.STEPSIZE);
+        else desc->SRCADDR.reg += desc->BTCNT.reg * bytesPerBeat;
+    }
+    DMAC->CHID.bit.ID  = next_desc_channel;
+	DMAC->CHCTRLA.reg |= DMAC_CHCTRLA_ENABLE;
+    __disable_irq();
+    dma_desc_free_count--;
+    DMAC->CHID.bit.ID    = next_desc_channel;
+    DMAC->CHCTRLB.reg |= DMAC_CHCTRLB_CMD_RESUME;
+    start = !(DMAC->CHCTRLA.bit.ENABLE);
+    __enable_irq();
+    uint8_t this_channel = next_desc_channel;
+    next_desc_channel = (next_desc_channel + 1) % DMA_DESC_COUNT;
+    if (start) {
+        __disable_irq();
+        uint8_t interruptMask = 0b00000111;
+        DMAC->CHID.bit.ID = this_channel;
+        DMAC->CHINTENSET.reg = DMAC_CHINTENSET_MASK &  interruptMask;
+        DMAC->CHINTENCLR.reg = DMAC_CHINTENCLR_MASK & ~interruptMask;
+        DMAC->CHCTRLA.bit.ENABLE = 1; // Enable the transfer channel
+        __enable_irq();
+    }
+    */
 }
 
 

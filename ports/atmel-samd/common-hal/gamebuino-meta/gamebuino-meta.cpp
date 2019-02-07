@@ -20,6 +20,9 @@ Gamebuino_Meta::Gamebuino* gb() {
 extern "C" {
 
 void gamebuino_meta_reset() {
+	if (ptr) {
+		delete ptr;
+	}
 	ptr = nullptr;
 }
 
