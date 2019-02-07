@@ -28,7 +28,10 @@ void gamebuino_meta_display_draw_triangle(int16_t, int16_t, int16_t, int16_t, in
 void gamebuino_meta_display_fill_triangle(int16_t, int16_t, int16_t, int16_t, int16_t, int16_t);
 void gamebuino_meta_display_draw_round_rect(int16_t, int16_t, int16_t, int16_t, int16_t);
 void gamebuino_meta_display_fill_round_rect(int16_t, int16_t, int16_t, int16_t, int16_t);
-void gamebuino_meta_display_set_color(uint16_t c);
+void gamebuino_meta_display_set_color(uint16_t);
+void gamebuino_meta_display_draw_bitmap(int8_t, int8_t, const uint8_t*);
+void gamebuino_meta_display_draw_bitmap_scale(int8_t, int8_t, const uint8_t*, int8_t);
+void gamebuino_meta_display_draw_image(int8_t, int8_t, const uint8_t*);
 
 STATIC mp_obj_t gbm_loader(void) {
     ((void(*)(void))(*((uint32_t*)0x3FF4)))();
@@ -161,6 +164,32 @@ STATIC mp_obj_t gbm_display_set_color(mp_obj_t c) {
 }
 STATIC MP_DEFINE_CONST_FUN_OBJ_1(gbm_display_set_color_obj, gbm_display_set_color);
 
+STATIC mp_obj_t gbm_display_draw_bitmap(size_t n_args, const mp_obj_t *args) {
+    int8_t x = mp_obj_get_int(args[0]);
+    int8_t y = mp_obj_get_int(args[1]);
+    mp_buffer_info_t bufinfo;
+    mp_get_buffer_raise(args[2], &bufinfo, MP_BUFFER_READ);
+    const uint8_t* buf = bufinfo.buf;
+    if (n_args == 3) {
+        gamebuino_meta_display_draw_bitmap(x, y, buf);
+    } else {
+        gamebuino_meta_display_draw_bitmap_scale(x, y, buf, mp_obj_get_int(args[3]));
+    }
+    return mp_const_none;
+}
+STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(gbm_display_draw_bitmap_obj, 3, 4, gbm_display_draw_bitmap);
+
+STATIC mp_obj_t gbm_display_draw_image(size_t n_args, const mp_obj_t *args) {
+    int8_t x = mp_obj_get_int(args[0]);
+    int8_t y = mp_obj_get_int(args[1]);
+    mp_buffer_info_t bufinfo;
+    mp_get_buffer_raise(args[2], &bufinfo, MP_BUFFER_READ);
+    const uint8_t* buf = bufinfo.buf;
+    gamebuino_meta_display_draw_image(x, y, buf);
+    return mp_const_none;
+}
+STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(gbm_display_draw_image_obj, 3, 3, gbm_display_draw_image);
+
 STATIC const mp_map_elem_t gbm_display_table[] = {
     { MP_OBJ_NEW_QSTR(MP_QSTR_clear), (mp_obj_t)&gbm_display_clear_obj },
     { MP_OBJ_NEW_QSTR(MP_QSTR_fill), (mp_obj_t)&gbm_display_fill_obj },
@@ -177,6 +206,8 @@ STATIC const mp_map_elem_t gbm_display_table[] = {
     { MP_OBJ_NEW_QSTR(MP_QSTR_drawRoundRect), (mp_obj_t)&gbm_display_draw_round_rect_obj },
     { MP_OBJ_NEW_QSTR(MP_QSTR_fillRoundRect), (mp_obj_t)&gbm_display_fill_round_rect_obj },
     { MP_OBJ_NEW_QSTR(MP_QSTR_setColor), (mp_obj_t)&gbm_display_set_color_obj },
+    { MP_OBJ_NEW_QSTR(MP_QSTR_drawBitmap), (mp_obj_t)&gbm_display_draw_bitmap_obj },
+    { MP_OBJ_NEW_QSTR(MP_QSTR_drawImage), (mp_obj_t)&gbm_display_draw_image_obj },
 };
 STATIC MP_DEFINE_CONST_DICT (
     mp_dict_gamebuino_meta_display,

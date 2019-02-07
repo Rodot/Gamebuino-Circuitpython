@@ -98,6 +98,15 @@ void gamebuino_meta_display_fill_round_rect(int16_t x0, int16_t y0, int16_t w, i
 void gamebuino_meta_display_set_color(uint16_t c) {
 	gb()->display.setColor((Gamebuino_Meta::Color)c);
 }
+void gamebuino_meta_display_draw_bitmap(int8_t x, int8_t y, const uint8_t *bitmap) {
+	gb()->display.drawBitmap(x, y, bitmap);
+}
+void gamebuino_meta_display_draw_bitmap_scale(int8_t x, int8_t y, const uint8_t *bitmap, int8_t scale) {
+	gb()->display.drawBitmap(x, y, bitmap, scale);
+}
+void gamebuino_meta_display_draw_image(int8_t x, int8_t y, const uint8_t *buf) {
+	gb()->display.drawImage(x, y, buf);
+}
 
 void gamebuino_meta_lights_clear() {
 	gb()->lights.clear();
