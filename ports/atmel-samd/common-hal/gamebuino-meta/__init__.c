@@ -4,6 +4,7 @@
 #include "py/binary.h"
 #include "py/gc.h"
 #include "py/objint.h"
+#include <string.h>
 
 void gamebuino_meta_display_clear(void);
 void gamebuino_meta_display_clear_color(const uint16_t);
@@ -377,6 +378,75 @@ const mp_obj_module_t mp_module_gamebuino_meta_color = {
 };
 
 
+void gamebuino_meta_gui_keyboard(const char*, char*, uint8_t);
+uint8_t gamebuino_meta_gui_menu(const char*, const char**, uint8_t);
+void gamebuino_meta_gui_popup(const char*, uint8_t);
+
+STATIC mp_obj_t gbm_gui_keyboard(size_t n_args, const mp_obj_t *args) {
+    mp_buffer_info_t bufinfo;
+    mp_get_buffer_raise(args[0], &bufinfo, MP_BUFFER_READ);
+    const char* title = bufinfo.buf;
+    uint8_t length = 63;
+    if (n_args > 1) {
+        if (n_args == 3) {
+            length = mp_obj_get_int(args[2]);
+        }
+    }
+    char text[length + 1];
+    if (n_args > 1) {
+        mp_get_buffer_raise(args[1], &bufinfo, MP_BUFFER_READ);
+        strncpy(text, bufinfo.buf, length);
+        text[length] = '\0';
+    } else {
+        text[0] = '\0';
+    }
+    gamebuino_meta_gui_keyboard(title, text, length);
+    return mp_obj_new_str(text, strlen(text));
+}
+STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(gbm_gui_keyboard_obj, 1, 3, gbm_gui_keyboard);
+
+STATIC mp_obj_t gbm_gui_menu(const mp_obj_t title_obj, const mp_obj_t entries_obj) {
+    mp_buffer_info_t bufinfo;
+    mp_get_buffer_raise(title_obj, &bufinfo, MP_BUFFER_READ);
+    const char* title = bufinfo.buf;
+    
+    uint8_t entries_size = mp_obj_get_int(mp_obj_len(entries_obj));
+    mp_obj_iter_buf_t iter_buf;
+    mp_obj_t iterable = mp_getiter(entries_obj, &iter_buf);
+    const char* entries[entries_size];
+    for (uint8_t i = 0; i < entries_size; i++) {
+        mp_obj_t o = mp_iternext(iterable);
+        mp_get_buffer_raise(o, &bufinfo, MP_BUFFER_READ);
+        entries[i] = bufinfo.buf;
+    }
+    uint8_t res = gamebuino_meta_gui_menu(title, entries, entries_size);
+    return MP_OBJ_NEW_SMALL_INT(res);
+}
+STATIC MP_DEFINE_CONST_FUN_OBJ_2(gbm_gui_menu_obj, gbm_gui_menu);
+
+STATIC mp_obj_t gbm_gui_popup(const mp_obj_t title_obj, const mp_obj_t duration_obj) {
+    mp_buffer_info_t bufinfo;
+    mp_get_buffer_raise(title_obj, &bufinfo, MP_BUFFER_READ);
+    gamebuino_meta_gui_popup(bufinfo.buf, mp_obj_get_int(duration_obj));
+    return mp_const_none;
+}
+STATIC MP_DEFINE_CONST_FUN_OBJ_2(gbm_gui_popup_obj, gbm_gui_popup);
+
+STATIC const mp_map_elem_t gbm_gui_table[] = {
+    { MP_OBJ_NEW_QSTR(MP_QSTR_keyboard), (mp_obj_t)&gbm_gui_keyboard_obj },
+    { MP_OBJ_NEW_QSTR(MP_QSTR_menu), (mp_obj_t)&gbm_gui_menu_obj },
+    { MP_OBJ_NEW_QSTR(MP_QSTR_popup), (mp_obj_t)&gbm_gui_popup_obj },
+};
+STATIC MP_DEFINE_CONST_DICT (
+    mp_dict_gamebuino_meta_gui,
+    gbm_gui_table
+);
+const mp_obj_module_t mp_module_gamebuino_meta_gui = {
+    .base = { &mp_type_module },
+    .globals = (mp_obj_dict_t*)&mp_dict_gamebuino_meta_gui,
+};
+
+
 void gamebuino_meta_begin(void);
 bool gamebuino_meta_update(void);
 void gamebuino_meta_wait_for_update(void);
@@ -403,6 +473,7 @@ STATIC mp_obj_t gbm_get_cpu_load(void) { return mp_obj_new_int(gamebuino_meta_ge
 STATIC MP_DEFINE_CONST_FUN_OBJ_0(gbm_get_cpu_load_obj, gbm_get_cpu_load);
 
 STATIC mp_obj_t gbm_get_free_ram(void) {
+    gc_collect();
     gc_info_t info;
     gc_info(&info);
     return MP_OBJ_NEW_SMALL_INT(info.free);
@@ -425,6 +496,7 @@ STATIC const mp_map_elem_t gbm_globals_table[] = {
     { MP_OBJ_NEW_QSTR(MP_QSTR_lights), (mp_obj_t)&mp_module_gamebuino_meta_lights },
     { MP_OBJ_NEW_QSTR(MP_QSTR_buttons), (mp_obj_t)&mp_module_gamebuino_meta_buttons },
     { MP_OBJ_NEW_QSTR(MP_QSTR_color), (mp_obj_t)&mp_module_gamebuino_meta_color },
+    { MP_OBJ_NEW_QSTR(MP_QSTR_gui), (mp_obj_t)&mp_module_gamebuino_meta_gui },
 };
 STATIC MP_DEFINE_CONST_DICT (
     mp_module_gamebuino_meta_globals,

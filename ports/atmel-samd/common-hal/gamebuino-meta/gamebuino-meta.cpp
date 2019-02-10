@@ -157,6 +157,16 @@ uint16_t gamebuino_meta_buttons_time_held(uint8_t b) {
 	return gb()->buttons.timeHeld((Gamebuino_Meta::Button)b);
 }
 
+void gamebuino_meta_gui_keyboard(const char* title, char* text, uint8_t length) {
+	gb()->gui.keyboard(title, text, length);
+}
+uint8_t gamebuino_meta_gui_menu(const char* title, const char** items, uint8_t length) {
+	return gb()->gui.menu(title, items, length);
+}
+void gamebuino_meta_gui_popup(const char* text, uint8_t duration) {
+	gb()->gui.popup(text, duration);
+}
+
 analogio_analogout_obj_t sound_pin;
 void gamebuino_meta_begin() {
 	gb()->begin();
