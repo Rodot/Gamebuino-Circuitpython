@@ -189,6 +189,9 @@ void gamebuino_meta_set_frame_rate(uint8_t fps) {
 uint8_t gamebuino_meta_get_cpu_load(){
 	return gb()->getCpuLoad();
 }
+void gamebuino_meta_get_default_name(char* str) {
+	gb()->getDefaultName(str);
+}
 void gamebuino_meta_titlescreen() {
 	if (PM->RCAUSE.bit.POR) {
 		gb()->startScreen();

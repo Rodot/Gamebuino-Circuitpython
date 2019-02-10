@@ -453,6 +453,7 @@ void gamebuino_meta_wait_for_update(void);
 void gamebuino_meta_update_display(void);
 void gamebuino_meta_set_frame_rate(uint8_t fps);
 uint8_t gamebuino_meta_get_cpu_load(void);
+void gamebuino_meta_get_default_name(char*);
 
 STATIC mp_obj_t gbm_begin(void) { gamebuino_meta_begin(); return mp_const_none; }
 STATIC MP_DEFINE_CONST_FUN_OBJ_0(gbm_begin_obj, gbm_begin);
@@ -480,6 +481,13 @@ STATIC mp_obj_t gbm_get_free_ram(void) {
 }
 STATIC MP_DEFINE_CONST_FUN_OBJ_0(gbm_get_free_ram_obj, gbm_get_free_ram);
 
+STATIC mp_obj_t gbm_get_default_name(void) {
+    char name[13];
+    gamebuino_meta_get_default_name(name);
+    return mp_obj_new_str(name, strlen(name));
+}
+STATIC MP_DEFINE_CONST_FUN_OBJ_0(gbm_get_default_name_obj, gbm_get_default_name);
+
 STATIC const mp_map_elem_t gbm_globals_table[] = {
     { MP_OBJ_NEW_QSTR(MP_QSTR___name__), MP_OBJ_NEW_QSTR(MP_QSTR_gamebuino_meta) },
     { MP_OBJ_NEW_QSTR(MP_QSTR_loader), (mp_obj_t)&gbm_loader_obj },
@@ -491,6 +499,7 @@ STATIC const mp_map_elem_t gbm_globals_table[] = {
     { MP_OBJ_NEW_QSTR(MP_QSTR_setFrameRate), (mp_obj_t)&gbm_set_frame_rate_obj },
     { MP_OBJ_NEW_QSTR(MP_QSTR_getCpuLoad), (mp_obj_t)&gbm_get_cpu_load_obj },
     { MP_OBJ_NEW_QSTR(MP_QSTR_getFreeRam), (mp_obj_t)&gbm_get_free_ram_obj },
+    { MP_OBJ_NEW_QSTR(MP_QSTR_getDefaultName), (mp_obj_t)&gbm_get_default_name_obj },
     
     { MP_OBJ_NEW_QSTR(MP_QSTR_display), (mp_obj_t)&mp_module_gamebuino_meta_display },
     { MP_OBJ_NEW_QSTR(MP_QSTR_lights), (mp_obj_t)&mp_module_gamebuino_meta_lights },
