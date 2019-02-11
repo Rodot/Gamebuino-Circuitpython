@@ -15,7 +15,7 @@ Gamebuino_Meta::Gamebuino* gb() {
 	}
 	ptr = new Gamebuino_Meta::Gamebuino;
 	return ptr;
-};
+}
 
 extern "C" {
 
@@ -197,6 +197,11 @@ void gamebuino_meta_titlescreen() {
 		gb()->startScreen();
 		gb()->titleScreen();
 	}
+	gb()->display.clear();
+	gb()->display.println("Gamebuino\nCircuitpython");
+	gb()->display.println("Version 0.0.1");
+	gb()->display.println("\nPlease add a python file...");
+	gb()->updateDisplay();
 }
 
 } // extern "C"
