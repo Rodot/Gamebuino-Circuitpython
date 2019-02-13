@@ -33,6 +33,7 @@ void gamebuino_meta_display_set_color(uint16_t);
 void gamebuino_meta_display_draw_bitmap(int8_t, int8_t, const uint8_t*);
 void gamebuino_meta_display_draw_bitmap_scale(int8_t, int8_t, const uint8_t*, int8_t);
 void gamebuino_meta_display_draw_image(int8_t, int8_t, const uint8_t*);
+void gamebuino_meta_display_set_font_size(uint8_t);
 
 STATIC mp_obj_t gbm_loader(void) {
     ((void(*)(void))(*((uint32_t*)0x3FF4)))();
@@ -191,6 +192,22 @@ STATIC mp_obj_t gbm_display_draw_image(size_t n_args, const mp_obj_t *args) {
 }
 STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(gbm_display_draw_image_obj, 3, 3, gbm_display_draw_image);
 
+STATIC mp_obj_t gbm_display_set_font_size(const mp_obj_t size) {
+    gamebuino_meta_display_set_font_size(mp_obj_get_int(size));
+    return mp_const_none;
+}
+STATIC MP_DEFINE_CONST_FUN_OBJ_1(gbm_display_set_font_size_obj, gbm_display_set_font_size);
+
+STATIC mp_obj_t gbm_display_width(void) {
+    return MP_OBJ_NEW_SMALL_INT(80);
+}
+STATIC MP_DEFINE_CONST_FUN_OBJ_0(gbm_display_width_obj, gbm_display_width);
+
+STATIC mp_obj_t gbm_display_height(void) {
+    return MP_OBJ_NEW_SMALL_INT(64);
+}
+STATIC MP_DEFINE_CONST_FUN_OBJ_0(gbm_display_height_obj, gbm_display_height);
+
 STATIC const mp_map_elem_t gbm_display_table[] = {
     { MP_OBJ_NEW_QSTR(MP_QSTR_clear), (mp_obj_t)&gbm_display_clear_obj },
     { MP_OBJ_NEW_QSTR(MP_QSTR_fill), (mp_obj_t)&gbm_display_fill_obj },
@@ -209,6 +226,9 @@ STATIC const mp_map_elem_t gbm_display_table[] = {
     { MP_OBJ_NEW_QSTR(MP_QSTR_setColor), (mp_obj_t)&gbm_display_set_color_obj },
     { MP_OBJ_NEW_QSTR(MP_QSTR_drawBitmap), (mp_obj_t)&gbm_display_draw_bitmap_obj },
     { MP_OBJ_NEW_QSTR(MP_QSTR_drawImage), (mp_obj_t)&gbm_display_draw_image_obj },
+    { MP_OBJ_NEW_QSTR(MP_QSTR_setFontSize), (mp_obj_t)&gbm_display_set_font_size_obj },
+    { MP_OBJ_NEW_QSTR(MP_QSTR_width), (mp_obj_t)&gbm_display_width_obj },
+    { MP_OBJ_NEW_QSTR(MP_QSTR_height), (mp_obj_t)&gbm_display_height_obj },
 };
 STATIC MP_DEFINE_CONST_DICT (
     mp_dict_gamebuino_meta_display,

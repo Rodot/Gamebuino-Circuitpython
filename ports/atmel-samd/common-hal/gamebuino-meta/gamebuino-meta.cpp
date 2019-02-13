@@ -107,6 +107,9 @@ void gamebuino_meta_display_draw_bitmap_scale(int8_t x, int8_t y, const uint8_t 
 void gamebuino_meta_display_draw_image(int8_t x, int8_t y, const uint8_t *buf) {
 	gb()->display.drawImage(x, y, buf);
 }
+void gamebuino_meta_display_set_font_size(uint8_t s) {
+	gb()->display.setFontSize(s);
+}
 
 void gamebuino_meta_lights_clear() {
 	gb()->lights.clear();
@@ -199,7 +202,7 @@ void gamebuino_meta_titlescreen() {
 	}
 	gb()->display.clear();
 	gb()->display.println("Gamebuino\nCircuitpython");
-	gb()->display.println("Version 0.0.1");
+	gb()->display.println("Version 0.0.2");
 	gb()->display.println("\nPlease add a python file...");
 	gb()->updateDisplay();
 }
