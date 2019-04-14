@@ -45,9 +45,16 @@
 #define BOARD_CS_BTN_PORT                 (1)
 #define BOARD_CS_BTN_PIN                  (3)
 
+#define BOARD_CS_SD_PORT                 (0)
+#define BOARD_CS_SD_PIN                  (27)
+
 #define CS_BTN_INIT()   PORT->Group[BOARD_CS_BTN_PORT].DIRSET.reg = (1UL<<BOARD_CS_BTN_PIN)
 #define CS_BTN_H()   PORT->Group[BOARD_CS_BTN_PORT].OUT.reg |= (1UL<<BOARD_CS_BTN_PIN)
 #define CS_BTN_L()   PORT->Group[BOARD_CS_BTN_PORT].OUT.reg &= ~(1UL<<BOARD_CS_BTN_PIN)
+
+#define CS_SD_INIT()   PORT->Group[BOARD_CS_SD_PORT].DIRSET.reg = (1UL<<BOARD_CS_SD_PIN)
+#define CS_SD_H()   PORT->Group[BOARD_CS_SD_PORT].OUT.reg |= (1UL<<BOARD_CS_SD_PIN)
+#define CS_SD_L()   PORT->Group[BOARD_CS_SD_PORT].OUT.reg &= ~(1UL<<BOARD_CS_SD_PIN)
 
 void board_init(void) {
     WDT->CTRL.bit.ENABLE = 0;

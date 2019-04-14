@@ -2,6 +2,10 @@
 #include <Gamebuino-Meta.h>
 #include "common-hal/analogio/AnalogOut.h"
 
+namespace Gamebuino_Meta {
+extern const uint16_t buttonsIconsData[];
+}
+
 extern "C" {
 void common_hal_analogio_analogout_construct(analogio_analogout_obj_t* self, const mcu_pin_obj_t *pin);
 void common_hal_analogio_analogout_set_value(analogio_analogout_obj_t *self,
@@ -170,9 +174,12 @@ void gamebuino_meta_gui_popup(const char* text, uint8_t duration) {
 	gb()->gui.popup(text, duration);
 }
 
+
 analogio_analogout_obj_t sound_pin;
 void gamebuino_meta_begin() {
 	gb()->begin();
+	
+	// set sound to low
 	hri_dac_write_CTRLA_ENABLE_bit(DAC, false);
 	common_hal_analogio_analogout_construct(&sound_pin, &pin_PA02);
 	common_hal_analogio_analogout_set_value(&sound_pin, 0);
@@ -196,13 +203,37 @@ void gamebuino_meta_get_default_name(char* str) {
 	gb()->getDefaultName(str);
 }
 void gamebuino_meta_titlescreen() {
+	const char version[] = "Gamebuino\nCircuitpython\nVersion 0.0.3";
 	if (PM->RCAUSE.bit.POR) {
 		gb()->startScreen();
-		gb()->titleScreen();
 	}
 	gb()->display.clear();
-	gb()->display.println("Gamebuino\nCircuitpython");
-	gb()->display.println("Version 0.0.2");
+	gb()->display.println(version);
+	gb()->display.println("\n\x15: START");
+	gb()->display.setCursorY(gb()->display.getCursorY()+1);
+	gb()->display.println("\x16: EXIT");
+	Image buttonsIcons = Gamebuino_Meta::Image(Gamebuino_Meta::buttonsIconsData);
+	while (1) {
+		while (gb()->update());
+		//blinking A button icon
+		if((gb()->frameCount%8) >= 4){
+			buttonsIcons.setFrame(1); //button A pressed
+		} else {
+			buttonsIcons.setFrame(0); //button A released
+		}
+		uint8_t x = gb()->display.width() - buttonsIcons.width();
+		uint8_t y = gb()->display.height() - buttonsIcons.height();
+		gb()->display.drawImage(x, y, buttonsIcons);
+		if (gb()->buttons.pressed(BUTTON_A)) {
+			break;
+		}
+		if (gb()->buttons.pressed(BUTTON_B)) {
+			gb()->bootloader.loader();
+			break;
+		}
+	}
+	gb()->display.clear();
+	gb()->display.println(version);
 	gb()->display.println("\nPlease add a python file...");
 	gb()->updateDisplay();
 }

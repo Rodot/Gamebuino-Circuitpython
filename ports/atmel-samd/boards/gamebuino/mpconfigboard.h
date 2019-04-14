@@ -36,6 +36,7 @@
 #define IGNORE_PIN_PB03     1
 #define IGNORE_PIN_PB22     1
 #define IGNORE_PIN_PB23     1
+#define IGNORE_PIN_PB27     1
 
 // skip audio and neopixels pin
 #define IGNORE_PIN_PA13     1

@@ -1,6 +1,6 @@
 LD_FILE = boards/samd21x18-bootloader-16k.ld
-USB_VID = 0x2341
-USB_PID = 0x824D
+USB_VID = 0x239A
+USB_PID = 0x8015
 USB_PRODUCT = "Arduino Zero"
 USB_MANUFACTURER = "Arduino"
 
