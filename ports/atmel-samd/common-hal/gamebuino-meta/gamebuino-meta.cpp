@@ -10,24 +10,32 @@ extern "C" {
 void common_hal_analogio_analogout_construct(analogio_analogout_obj_t* self, const mcu_pin_obj_t *pin);
 void common_hal_analogio_analogout_set_value(analogio_analogout_obj_t *self,
         uint16_t value);
+void* gbptr = nullptr;
 }
 
+analogio_analogout_obj_t sound_pin;
 Gamebuino_Meta::Gamebuino* ptr = nullptr;
 Gamebuino_Meta::Gamebuino* gb() {
-	if (ptr) {
-		return ptr;
+	if (gbptr) {
+		return (Gamebuino_Meta::Gamebuino*)gbptr;
 	}
-	ptr = new Gamebuino_Meta::Gamebuino;
-	return ptr;
+	gbptr = new Gamebuino_Meta::Gamebuino;
+	((Gamebuino_Meta::Gamebuino*)gbptr)->begin();
+	
+	// set sound to low
+	hri_dac_write_CTRLA_ENABLE_bit(DAC, false);
+	common_hal_analogio_analogout_construct(&sound_pin, &pin_PA02);
+	common_hal_analogio_analogout_set_value(&sound_pin, 0);
+	return (Gamebuino_Meta::Gamebuino*)gbptr;
 }
 
 extern "C" {
 
 void gamebuino_meta_reset() {
-	if (ptr) {
-		delete ptr;
+	if (gbptr) {
+		delete ((Gamebuino_Meta::Gamebuino*)gbptr);
 	}
-	ptr = nullptr;
+	gbptr = nullptr;
 }
 
 void gamebuino_meta_display_clear() {
@@ -174,15 +182,8 @@ void gamebuino_meta_gui_popup(const char* text, uint8_t duration) {
 	gb()->gui.popup(text, duration);
 }
 
-
-analogio_analogout_obj_t sound_pin;
 void gamebuino_meta_begin() {
-	gb()->begin();
-	
-	// set sound to low
-	hri_dac_write_CTRLA_ENABLE_bit(DAC, false);
-	common_hal_analogio_analogout_construct(&sound_pin, &pin_PA02);
-	common_hal_analogio_analogout_set_value(&sound_pin, 0);
+    gb();
 }
 bool gamebuino_meta_update() {
 	return gb()->update();

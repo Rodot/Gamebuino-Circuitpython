@@ -462,6 +462,10 @@ extern const struct _mp_obj_module_t pixelbuf_module;
     #define NETWORK_ROOT_POINTERS
 #endif
 
+#ifndef BOARD_ROOT_POINTERS
+#define BOARD_ROOT_POINTERS
+#endif
+
 #define MICROPY_PORT_ROOT_POINTERS \
     const char *readline_hist[8]; \
     vstr_t *repl_line; \
@@ -470,6 +474,7 @@ extern const struct _mp_obj_module_t pixelbuf_module;
     FLASH_ROOT_POINTERS \
     mp_obj_t gamepad_singleton; \
     NETWORK_ROOT_POINTERS \
+    BOARD_ROOT_POINTERS \
 
 void run_background_tasks(void);
 #define MICROPY_VM_HOOK_LOOP run_background_tasks();
