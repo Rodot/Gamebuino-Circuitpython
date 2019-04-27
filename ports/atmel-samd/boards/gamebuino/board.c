@@ -59,6 +59,8 @@
 
 void board_init(void) {
     WDT->CTRL.bit.ENABLE = 0;
+    CS_SD_INIT();
+    CS_SD_H();
 }
 
 bool board_requests_safe_mode(void) {
