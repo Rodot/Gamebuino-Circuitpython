@@ -50,5 +50,7 @@ extern const struct _mp_obj_module_t mp_module_gamebuino_meta;
 
 #define NO_HARDFAULT_HANDLER
 
+#define DYNAMIC_MEM_ROOTPOINTERS_SIZE 20
+
 #define BOARD_ROOT_POINTERS \
-	void* gbptr;
+	void* dynamic_mem_rootpointers[DYNAMIC_MEM_ROOTPOINTERS_SIZE];

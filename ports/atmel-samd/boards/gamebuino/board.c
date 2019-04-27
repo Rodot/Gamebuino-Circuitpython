@@ -28,6 +28,7 @@
 #include "mpconfigboard.h"
 #include "hal/include/hal_gpio.h"
 #include "py/obj.h"
+#include "py/mpstate.h"
 #include "shared-bindings/microcontroller/Processor.h"
 #include "hal/include/hal_spi_m_sync.h"
 #include "hal/include/hpl_spi_m_sync.h"
@@ -89,6 +90,9 @@ void reset_board(void) {
     }
     firstReset = false;
     gamebuino_meta_reset();
+    for (uint8_t i = 0; i < DYNAMIC_MEM_ROOTPOINTERS_SIZE; i++) {
+        MP_STATE_PORT(dynamic_mem_rootpointers[i]) = 0;
+    }
 }
 
 //void shared_modules_random_seed(mp_uint_t);
@@ -99,11 +103,23 @@ void gamebuino_meta_pick_random_seed(void) {
 }
 
 void* gb_malloc(size_t size) {
-    return m_malloc(size, true);
+    void* ptr = m_malloc(size, true);
+    for (uint8_t i = 0; i < DYNAMIC_MEM_ROOTPOINTERS_SIZE; i++) {
+        if (MP_STATE_PORT(dynamic_mem_rootpointers[i]) == 0) {
+            MP_STATE_PORT(dynamic_mem_rootpointers[i]) = ptr;
+            break;
+        }
+    }
+    return ptr;
 }
 
 void gb_free(void* ptr) {
     m_free(ptr);
+    for (uint8_t i = 0; i < DYNAMIC_MEM_ROOTPOINTERS_SIZE; i++) {
+        if (MP_STATE_PORT(dynamic_mem_rootpointers[i]) == ptr) {
+            MP_STATE_PORT(dynamic_mem_rootpointers[i]) = 0;
+        }
+    }
 }
 
 static busio_spi_obj_t spi_obj;
