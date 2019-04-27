@@ -42,16 +42,12 @@ $(Q)$(CC) $(CFLAGS) -c -MD -o $@ $<
   $(RM) -f $(@:.o=.d)
 endef
 
-<<<<<<< HEAD
 define compile_cpp
 $(STEPECHO) "C++ $<"
 $(Q)$(CXX) $(CPPFLAGS) -c -MD -o $@ $<
 endef
 
-vpath %.c . $(TOP)
-=======
 vpath %.c . $(TOP) $(USER_C_MODULES)
->>>>>>> e072f0d893eb7854b01a7c4e1a8cfcae9af51026
 $(BUILD)/%.o: %.c
 	$(call compile_c)
 

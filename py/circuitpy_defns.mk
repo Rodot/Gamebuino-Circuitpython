@@ -52,7 +52,37 @@ BASE_CFLAGS = \
 	-DCIRCUITPY_SOFTWARE_SAFE_MODE=0x0ADABEEF \
 	-DCIRCUITPY_CANARY_WORD=0xADAF00 \
 	-DCIRCUITPY_SAFE_RESTART_WORD=0xDEADBEEF \
-	--param max-inline-insns-single=500
+	--param max-inline-insns-single=500 \
+	$(DEFINES_EXTRA)
+
+BASE_CPPFLAGS = \
+	-fsingle-precision-constant \
+	-fno-strict-aliasing \
+	-Wno-endif-labels \
+	-Werror-implicit-function-declaration \
+	-Wfloat-equal \
+	-Wundef \
+	-Wwrite-strings \
+	-Wsign-compare \
+	-Wno-deprecated-declarations \
+	-Wunreachable-code \
+	-Wno-error=lto-type-mismatch \
+	-Wno-overflow \
+	-Wno-error=class-memaccess \
+	-Wno-error=float-equal \
+	-Wno-error=unused-variable \
+	-Wno-error=narrowing \
+	-D__$(CHIP_VARIANT)__ \
+	-ffunction-sections \
+	-fdata-sections \
+	-fshort-enums \
+	-DCIRCUITPY_SOFTWARE_SAFE_MODE=0x0ADABEEF \
+	-DCIRCUITPY_CANARY_WORD=0xADAF00 \
+	-DCIRCUITPY_SAFE_RESTART_WORD=0xDEADBEEF \
+	--param max-inline-insns-single=500 \
+	-fno-exceptions \
+	-fno-rtti \
+	$(DEFINES_EXTRA)
 
 #        Use these flags to debug build times and header includes.
 #        -ftime-report

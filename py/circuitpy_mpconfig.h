@@ -552,6 +552,9 @@ extern const struct _mp_obj_module_t ustack_module;
 // including dependencies such as TERMINALIO depending on DISPLAYIO (shown by indentation).
 // Some of these definitions will be blank depending on what is turned on and off.
 // Some are omitted because they're in MICROPY_PORT_BUILTIN_MODULE_WEAK_LINKS above.
+#ifndef EXTRA_BUILTIN_MODULES
+#define EXTRA_BUILTIN_MODULES
+#endif
 #define MICROPY_PORT_BUILTIN_MODULES_STRONG_LINKS \
     ANALOGIO_MODULE \
     AUDIOBUSIO_MODULE \
@@ -593,6 +596,7 @@ extern const struct _mp_obj_module_t ustack_module;
     USB_HID_MODULE \
     USB_MIDI_MODULE \
     USTACK_MODULE \
+    EXTRA_BUILTIN_MODULES \
 
 // If weak links are enabled, just include strong links in the main list of modules,
 // and also include the underscore alternate names.

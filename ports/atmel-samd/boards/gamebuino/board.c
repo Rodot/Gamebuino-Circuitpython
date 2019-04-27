@@ -39,7 +39,7 @@
 #include "supervisor/filesystem.h"
 #include "supervisor/shared/autoreload.h"
 #include "supervisor/port.h"
-#include "supervisor/shared/board_busses.h"
+#include "shared-module/board/__init__.h"
 #include <string.h>
 
 #define BOARD_CS_BTN_PORT                 (1)
@@ -78,7 +78,6 @@ void reset_board(void) {
         start_mp(heap);
         
         // code here
-        gamebuino_meta_begin();
         gamebuino_meta_titlescreen();
         
         stop_mp();
@@ -92,11 +91,11 @@ void reset_board(void) {
     gamebuino_meta_reset();
 }
 
-void shared_modules_random_seed(mp_uint_t);
+//void shared_modules_random_seed(mp_uint_t);
 
 void gamebuino_meta_pick_random_seed(void) {
-    unsigned int seed = 42;
-    shared_modules_random_seed(seed);
+//    unsigned int seed = 42;
+//    shared_modules_random_seed(seed);
 }
 
 void* gb_malloc(size_t size) {
@@ -107,7 +106,7 @@ void gb_free(void* ptr) {
     m_free(ptr);
 }
 
-busio_spi_obj_t spi_obj;
+static busio_spi_obj_t spi_obj;
 bool inited_spi = false;
 void spi_init(void) {
     if (inited_spi) {

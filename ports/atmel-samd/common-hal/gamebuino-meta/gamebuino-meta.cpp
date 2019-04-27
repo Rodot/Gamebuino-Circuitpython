@@ -32,9 +32,10 @@ Gamebuino_Meta::Gamebuino* gb() {
 extern "C" {
 
 void gamebuino_meta_reset() {
+	/*
 	if (gbptr) {
 		delete ((Gamebuino_Meta::Gamebuino*)gbptr);
-	}
+	}*/
 	gbptr = nullptr;
 }
 

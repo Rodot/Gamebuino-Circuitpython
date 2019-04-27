@@ -6,6 +6,7 @@ USB_MANUFACTURER = "Arduino"
 
 INTERNAL_FLASH_FILESYSTEM = 1
 LONGINT_IMPL = NONE
+CIRCUITPY_SMALL_BUILD = 1
 
 CHIP_VARIANT = SAMD21G18A
 CHIP_FAMILY = samd21
@@ -35,6 +36,7 @@ DEFINES_EXTRA = \
 	"-DUSB_PRODUCT=\"Arduino Zero\"" \
 	-DNO_ARDUINO_ID \
 
+BOOTLOADER_SIZE := 0x4000
 
 $(shell mkdir -p $(BUILD))
 $(shell $(PYTHON3) common-hal/gamebuino-meta/make_extra_sources.py > $(BUILD)/extra_sources.mk)

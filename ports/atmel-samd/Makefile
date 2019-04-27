@@ -164,10 +164,14 @@ endif
 
 ifeq ($(CHIP_FAMILY), samd21)
 LDFLAGS += -mthumb -mcpu=cortex-m0plus -Lasf/thirdparty/CMSIS/Lib/GCC/
+ifeq ($(BOOTLOADER_SIZE),)
 BOOTLOADER_SIZE := 0x2000
+endif
 else ifeq ($(CHIP_FAMILY), samd51)
 LDFLAGS += -mthumb -mcpu=cortex-m4
+ifeq ($(BOOTLOADER_SIZE),)
 BOOTLOADER_SIZE := 0x4000
+endif
 endif
 
 SRC_ASF := \
