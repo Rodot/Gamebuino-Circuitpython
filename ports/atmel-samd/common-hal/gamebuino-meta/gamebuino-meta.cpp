@@ -205,7 +205,7 @@ void gamebuino_meta_get_default_name(char* str) {
 	gb()->getDefaultName(str);
 }
 void gamebuino_meta_titlescreen() {
-	const char version[] = "Gamebuino\nCircuitpython\nVersion 0.0.3";
+	const char version[] = "Gamebuino\nCircuitpython\nVersion 0.0.4";
 	if (PM->RCAUSE.bit.POR) {
 		gb()->startScreen();
 	}
