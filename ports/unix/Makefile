@@ -149,6 +149,8 @@ SRC_C = \
 	alloc.c \
 	coverage.c \
 	fatfs_port.c \
+	supervisor/stub/filesystem.c \
+	supervisor/stub/safe_mode.c \
 	supervisor/stub/serial.c \
 	supervisor/stub/stack.c \
 	supervisor/shared/translate.c \
@@ -255,7 +257,7 @@ coverage:
 	$(MAKE) \
 	    COPT="-O0" CFLAGS_EXTRA='$(CFLAGS_EXTRA) -DMP_CONFIGFILE="<mpconfigport_coverage.h>" \
 	    -fprofile-arcs -ftest-coverage \
-	    -Wdouble-promotion -Wformat -Wmissing-declarations -Wmissing-prototypes -Wsign-compare \
+	    -Wformat -Wmissing-declarations -Wmissing-prototypes -Wsign-compare \
 	    -Wold-style-definition -Wpointer-arith -Wshadow -Wuninitialized -Wunused-parameter \
 	    -DMICROPY_UNIX_COVERAGE' \
 	    LDFLAGS_EXTRA='-fprofile-arcs -ftest-coverage' \

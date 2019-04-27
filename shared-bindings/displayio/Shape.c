@@ -43,7 +43,7 @@
 //|
 //| .. warning:: This will likely be changed before 4.0.0. Consider it very experimental.
 //|
-//| .. class:: Shape(width, height, *, mirror_x=False, mirrored_y=False)
+//| .. class:: Shape(width, height, *, mirror_x=False, mirror_y=False)
 //|
 //|   Create a Shape object with the given fixed size. Each pixel is one bit and is stored by the
 //|   column boundaries of the shape on each row. Each row's boundary defaults to the full row.
@@ -64,11 +64,20 @@ STATIC mp_obj_t displayio_shape_make_new(const mp_obj_type_t *type, size_t n_arg
     mp_arg_val_t args[MP_ARRAY_SIZE(allowed_args)];
     mp_arg_parse_all(n_args, pos_args, kw_args, MP_ARRAY_SIZE(allowed_args), allowed_args, args);
 
+    mp_int_t width = args[ARG_width].u_int;
+    if (width < 1) {
+        mp_raise_ValueError_varg(translate("%q must be >= 1"), MP_QSTR_width);
+    }
+    mp_int_t height = args[ARG_height].u_int;
+    if (height < 1) {
+        mp_raise_ValueError_varg(translate("%q must be >= 1"), MP_QSTR_height);
+    }
+
     displayio_shape_t *self = m_new_obj(displayio_shape_t);
     self->base.type = &displayio_shape_type;
     common_hal_displayio_shape_construct(self,
-        args[ARG_width].u_int,
-        args[ARG_height].u_int,
+        width,
+        height,
         args[ARG_mirror_x].u_bool,
         args[ARG_mirror_y].u_bool);
 

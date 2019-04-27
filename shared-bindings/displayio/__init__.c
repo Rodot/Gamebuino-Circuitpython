@@ -39,7 +39,7 @@
 #include "shared-bindings/displayio/Palette.h"
 #include "shared-bindings/displayio/ParallelBus.h"
 #include "shared-bindings/displayio/Shape.h"
-#include "shared-bindings/displayio/Sprite.h"
+#include "shared-bindings/displayio/TileGrid.h"
 
 //| :mod:`displayio` --- Native display driving
 //| =========================================================================
@@ -50,8 +50,6 @@
 //|
 //| The `displayio` module contains classes to manage display output
 //| including synchronizing with refresh rates and partial updating.
-//|
-//| .. warning:: This will be changed before 4.0.0. Consider it very experimental.
 //|
 //| Libraries
 //|
@@ -67,9 +65,7 @@
 //|     Palette
 //|     ParallelBus
 //|     Shape
-//|     Sprite
-//|
-//| All libraries change hardware state but are never deinit
+//|     TileGrid
 //|
 
 
@@ -78,6 +74,9 @@
 //|   Releases any actively used displays so their busses and pins can be used again. This will also
 //|   release the builtin display on boards that have one. You will need to reinitialize it yourself
 //|   afterwards.
+//|
+//|   Use this once in your code.py if you initialize a display. Place it right before the
+//|   initialization so the display is active as long as possible.
 //|
 STATIC mp_obj_t displayio_release_displays(void) {
     common_hal_displayio_release_displays();
@@ -94,7 +93,7 @@ STATIC const mp_rom_map_elem_t displayio_module_globals_table[] = {
     { MP_ROM_QSTR(MP_QSTR_OnDiskBitmap), MP_ROM_PTR(&displayio_ondiskbitmap_type) },
     { MP_ROM_QSTR(MP_QSTR_Palette), MP_ROM_PTR(&displayio_palette_type) },
     { MP_ROM_QSTR(MP_QSTR_Shape), MP_ROM_PTR(&displayio_shape_type) },
-    { MP_ROM_QSTR(MP_QSTR_Sprite), MP_ROM_PTR(&displayio_sprite_type) },
+    { MP_ROM_QSTR(MP_QSTR_TileGrid), MP_ROM_PTR(&displayio_tilegrid_type) },
 
     { MP_ROM_QSTR(MP_QSTR_FourWire), MP_ROM_PTR(&displayio_fourwire_type) },
     { MP_ROM_QSTR(MP_QSTR_ParallelBus), MP_ROM_PTR(&displayio_parallelbus_type) },

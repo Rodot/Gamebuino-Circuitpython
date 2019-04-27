@@ -43,7 +43,7 @@ void load_serial_number(void) {
     uint8_t raw_id[COMMON_HAL_MCU_PROCESSOR_UID_LENGTH];
     common_hal_mcu_processor_get_uid(raw_id);
 
-    const char nibble_to_hex[16] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
+    static const char nibble_to_hex[16] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
                                     'A', 'B', 'C', 'D', 'E', 'F'};
     for (int i = 0; i < COMMON_HAL_MCU_PROCESSOR_UID_LENGTH; i++) {
         for (int j = 0; j < 2; j++) {
@@ -54,10 +54,8 @@ void load_serial_number(void) {
     }
 }
 
-bool _usb_enabled = false;
-
 bool usb_enabled(void) {
-    return _usb_enabled;
+    return tusb_inited();
 }
 
 void usb_init(void) {
@@ -65,7 +63,6 @@ void usb_init(void) {
     load_serial_number();
 
     tusb_init();
-    _usb_enabled = true;
 
 #if MICROPY_KBD_EXCEPTION
     // Set Ctrl+C as wanted char, tud_cdc_rx_wanted_cb() callback will be invoked when Ctrl+C is received
@@ -73,7 +70,9 @@ void usb_init(void) {
     tud_cdc_set_wanted_char(CHAR_CTRL_C);
 #endif
 
+#if CIRCUITPY_USB_MIDI
     usb_midi_init();
+#endif
 }
 
 void usb_background(void) {
@@ -95,13 +94,15 @@ void tud_mount_cb(void) {
 void tud_umount_cb(void) {
 }
 
-uint32_t tusb_hal_millis(void) {
-    uint64_t ms;
-    uint32_t us;
-    current_tick(&ms, &us);
-    return (uint32_t) ms;
+// Invoked when usb bus is suspended
+// remote_wakeup_en : if host allows us to perform remote wakeup
+// USB Specs: Within 7ms, device must draw an average current less than 2.5 mA from bus
+void tud_suspend_cb(bool remote_wakeup_en) {
 }
 
+// Invoked when usb bus is resumed
+void tud_resume_cb(void) {
+}
 
 // Invoked when cdc when line state changed e.g connected/disconnected
 // Use to reset to DFU when disconnect with 1200 bps

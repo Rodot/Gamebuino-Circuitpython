@@ -4,7 +4,7 @@ language: c
 compiler:
   - gcc
 git:
-  depth: 1
+  depth: 6
 
 # Each item under 'env' is a separate Travis job to execute.
 # They run in separate environments, so each one must take the time
@@ -21,11 +21,11 @@ git:
 # that SDK is shortest and add it there.  In the case of major re-organizations,
 # just try to make the builds "about equal in run time"
 env:
-  - TRAVIS_TESTS="unix docs translations website" TRAVIS_BOARDS="circuitplayground_express mini_sam_m4 grandcentral_m4_express pca10056 pca10059 feather_nrf52840_express makerdiary_nrf52840_mdk makerdiary_nrf52840_mdk_usb_dongle particle_boron particle_argon particle_xenon sparkfun_nrf52840_mini" TRAVIS_SDK=arm:nrf
-  - TRAVIS_BOARDS="metro_m0_express metro_m4_express pirkey_m0 trellis_m4_express trinket_m0" TRAVIS_SDK=arm
-  - TRAVIS_BOARDS="feather_radiofruit_zigbee gemma_m0 hallowing_m0_express itsybitsy_m0_express itsybitsy_m4_express meowmeow" TRAVIS_SDK=arm
-  - TRAVIS_BOARDS="feather_m0_express_crickit feather_m0_rfm69 feather_m0_rfm9x feather_m4_express arduino_zero arduino_mkr1300 arduino_mkrzero" TRAVIS_SDK=arm
-  - TRAVIS_BOARDS="circuitplayground_express_crickit feather_m0_adalogger feather_m0_basic feather_m0_express catwan_usbstick pyportal sparkfun_samd21_mini sparkfun_samd21_dev" TRAVIS_SDK=arm
+  - TRAVIS_TESTS="unix docs translations website" TRAVIS_BOARDS="circuitplayground_express mini_sam_m4 grandcentral_m4_express pca10056 pca10059 feather_nrf52840_express makerdiary_nrf52840_mdk makerdiary_nrf52840_mdk_usb_dongle particle_boron particle_argon particle_xenon sparkfun_nrf52840_mini electronut_labs_papyr" TRAVIS_SDK=arm:nrf
+  - TRAVIS_BOARDS="metro_m0_express metro_m4_express metro_m4_airlift_lite pirkey_m0 trellis_m4_express trinket_m0 sparkfun_lumidrive sparkfun_redboard_turbo bast_pro_mini_m0" TRAVIS_SDK=arm
+  - TRAVIS_BOARDS="feather_radiofruit_zigbee gemma_m0 hallowing_m0_express itsybitsy_m0_express itsybitsy_m4_express meowmeow sam32 uchip" TRAVIS_SDK=arm
+  - TRAVIS_BOARDS="feather_m0_express_crickit feather_m0_rfm69 feather_m0_rfm9x feather_m4_express arduino_zero arduino_mkr1300 arduino_mkrzero pewpew10 kicksat-sprite ugame10" TRAVIS_SDK=arm
+  - TRAVIS_BOARDS="circuitplayground_express_crickit feather_m0_adalogger feather_m0_basic feather_m0_express catwan_usbstick pyportal sparkfun_samd21_mini sparkfun_samd21_dev pybadge" TRAVIS_SDK=arm
 
 addons:
   artifacts:
@@ -56,7 +56,6 @@ notifications:
 before_script:
   # Expand the git tree back to 4.0.0-alpha.1 and then fetch the latest tag.
   - LAST_TAG=`git ls-remote --quiet --tags --sort=version:refname | egrep -o "refs/tags/[0-9]+.*\$" | tail -n 1`
-  - git fetch --shallow-exclude=4.0.0-alpha.1 || git fetch --unshallow
   - git fetch --depth 1 origin $LAST_TAG:$LAST_TAG
   - git describe --dirty --always --tags
   - function var_search () { case "$1" in *$2*) true;; *) false;; esac; }
@@ -73,7 +72,8 @@ before_script:
   - sudo apt-get install -y python3-pip
   - pip3 install --user sh click
   - ([[ -z "$TRAVIS_TESTS" ]] || sudo pip install --upgrade cpp-coveralls)
-  - (! var_search "${TRAVIS_TESTS-}" docs || pip install --user Sphinx sphinx-rtd-theme recommonmark)
+  - (! var_search "${TRAVIS_TESTS-}" docs || sudo apt-get install -y librsvg2-bin)
+  - (! var_search "${TRAVIS_TESTS-}" docs || pip install --user Sphinx sphinx-rtd-theme recommonmark sphinxcontrib-svg2pdfconverter)
   - (! var_search "${TRAVIS_TESTS-}" translations || pip3 install --user polib)
 
   # report some good version numbers to the build

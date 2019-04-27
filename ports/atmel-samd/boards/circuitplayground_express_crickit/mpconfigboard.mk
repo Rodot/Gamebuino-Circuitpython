@@ -9,13 +9,21 @@ EXTERNAL_FLASH_DEVICE_COUNT = 2
 EXTERNAL_FLASH_DEVICES = "S25FL216K, GD25Q16C"
 # Turn off longints for Crickit build to make room for additional frozen libs.
 LONGINT_IMPL = NONE
-# Disable pixelbuf to save room
-EXCLUDE_PIXELBUF = 1
+
+CIRCUITPY_DISPLAYIO = 0
+CIRCUITPY_PIXELBUF = 0
+CIRCUITPY_FREQUENCYIO = 0
+CIRCUITPY_I2CSLAVE = 0
 
 CHIP_VARIANT = SAMD21G18A
 CHIP_FAMILY = samd21
 
+# Tweak inlining depending on language.
+ifeq ($(TRANSLATION), zh_Latn_pinyin)
+CFLAGS_INLINE_LIMIT = 35
+else
 CFLAGS_INLINE_LIMIT = 55
+endif
 
 # Include these Python libraries in firmware.
 FROZEN_MPY_DIRS += $(TOP)/frozen/Adafruit_CircuitPython_BusDevice

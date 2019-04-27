@@ -43,13 +43,14 @@
 #include "lib/mp-readline/readline.h"
 #include "lib/utils/pyexec.h"
 
+#include "background.h"
 #include "mpconfigboard.h"
+#include "shared-module/displayio/__init__.h"
 #include "supervisor/cpu.h"
 #include "supervisor/memory.h"
 #include "supervisor/port.h"
 #include "supervisor/filesystem.h"
 #include "supervisor/shared/autoreload.h"
-#include "supervisor/shared/board_busses.h"
 #include "supervisor/shared/translate.h"
 #include "supervisor/shared/rgb_led_status.h"
 #include "supervisor/shared/safe_mode.h"
@@ -57,12 +58,12 @@
 #include "supervisor/shared/stack.h"
 #include "supervisor/serial.h"
 
-#ifdef MICROPY_PY_NETWORK
+#if CIRCUITPY_NETWORK
 #include "shared-module/network/__init__.h"
 #endif
 
-#ifdef CIRCUITPY_DISPLAYIO
-#include "shared-module/displayio/__init__.h"
+#if CIRCUITPY_BOARD
+#include "shared-module/board/__init__.h"
 #endif
 
 void do_str(const char *src, mp_parse_input_kind_t input_kind) {
@@ -88,6 +89,8 @@ void do_str(const char *src, mp_parse_input_kind_t input_kind) {
 void start_mp(supervisor_allocation* heap) {
     reset_status_led();
     autoreload_stop();
+
+    background_tasks_reset();
 
     // Stack limit should be less than real stack size, so we have a chance
     // to recover from limit hit.  (Limit is measured in bytes.)
@@ -121,15 +124,28 @@ void start_mp(supervisor_allocation* heap) {
 
     mp_obj_list_init(mp_sys_argv, 0);
 
-    #if MICROPY_PY_NETWORK
+    #if CIRCUITPY_NETWORK
     network_module_init();
     #endif
 }
 
 void stop_mp(void) {
-    #if MICROPY_PY_NETWORK
+    #if CIRCUITPY_NETWORK
     network_module_deinit();
     #endif
+
+    #if MICROPY_VFS
+    mp_vfs_mount_t *vfs = MP_STATE_VM(vfs_mount_table);
+
+    // Unmount all heap allocated vfs mounts.
+    while (gc_nbytes(vfs) > 0) {
+        vfs = vfs->next;
+    }
+    MP_STATE_VM(vfs_mount_table) = vfs;
+    MP_STATE_VM(vfs_cur) = vfs;
+    #endif
+
+    gc_deinit();
 }
 
 #define STRING_LIST(...) {__VA_ARGS__, ""}
@@ -160,6 +176,22 @@ bool maybe_run_list(const char ** filenames, pyexec_result_t* exec_result) {
     return true;
 }
 
+void cleanup_after_vm(supervisor_allocation* heap) {
+    // Turn off the display and flush the fileystem before the heap disappears.
+    #if CIRCUITPY_DISPLAYIO
+    reset_displays();
+    #endif
+    filesystem_flush();
+    stop_mp();
+    free_memory(heap);
+    supervisor_move_memory();
+
+    reset_port();
+    reset_board_busses();
+    reset_board();
+    reset_status_led();
+}
+
 bool run_code_py(safe_mode_t safe_mode) {
     bool serial_connected_at_start = serial_connected();
     #ifdef CIRCUITPY_AUTORELOAD_DELAY_MS
@@ -188,8 +220,8 @@ bool run_code_py(safe_mode_t safe_mode) {
     } else {
         new_status_color(MAIN_RUNNING);
 
-        const char *supported_filenames[] = STRING_LIST("code.txt", "code.py", "main.py", "main.txt");
-        const char *double_extension_filenames[] = STRING_LIST("code.txt.py", "code.py.txt", "code.txt.txt","code.py.py",
+        static const char *supported_filenames[] = STRING_LIST("code.txt", "code.py", "main.py", "main.txt");
+        static const char *double_extension_filenames[] = STRING_LIST("code.txt.py", "code.py.txt", "code.txt.txt","code.py.py",
                                                     "main.txt.py", "main.py.txt", "main.txt.txt","main.py.py");
 
         stack_resize();
@@ -203,17 +235,7 @@ bool run_code_py(safe_mode_t safe_mode) {
                 serial_write_compressed(translate("WARNING: Your code filename has two extensions\n"));
             }
         }
-        #ifdef CIRCUITPY_DISPLAYIO
-        // Turn off the display before the heap disappears.
-        reset_displays();
-        #endif
-        stop_mp();
-        free_memory(heap);
-
-        reset_port();
-        reset_board_busses();
-        reset_board();
-        reset_status_led();
+        cleanup_after_vm(heap);
 
         if (result.return_code & PYEXEC_FORCED_EXIT) {
             return reload_requested;
@@ -221,6 +243,10 @@ bool run_code_py(safe_mode_t safe_mode) {
     }
 
     // Wait for connection or character.
+    if (!serial_connected_at_start) {
+        serial_write_compressed(translate("\nCode done running. Waiting for reload.\n"));
+    }
+
     bool serial_connected_before_animation = false;
     rgb_status_animation_t animation;
     prep_rgb_status_animation(&result, found_main, safe_mode, &animation);
@@ -229,6 +255,7 @@ bool run_code_py(safe_mode_t safe_mode) {
             MICROPY_VM_HOOK_LOOP
         #endif
         if (reload_requested) {
+            reload_requested = false;
             return true;
         }
 
@@ -306,12 +333,12 @@ void __attribute__ ((noinline)) run_boot_py(safe_mode_t safe_mode) {
             mp_hal_delay_ms(1500);
 
             // USB isn't up, so we can write the file.
-            filesystem_writable_by_python(true);
+            filesystem_set_internal_writable_by_usb(false);
             f_open(fs, boot_output_file, CIRCUITPY_BOOT_OUTPUT_FILE, FA_WRITE | FA_CREATE_ALWAYS);
 
             // Switch the filesystem back to non-writable by Python now instead of later,
             // since boot.py might change it back to writable.
-            filesystem_writable_by_python(false);
+            filesystem_set_internal_writable_by_usb(true);
 
             // Write version info to boot_out.txt.
             mp_hal_stdout_tx_str(MICROPY_FULL_VERSION_INFO);
@@ -336,12 +363,7 @@ void __attribute__ ((noinline)) run_boot_py(safe_mode_t safe_mode) {
         boot_output_file = NULL;
         #endif
 
-        // Reset to remove any state that boot.py setup. It should only be used to
-        // change internal state that's not in the heap.
-        reset_port();
-        reset_board();
-        stop_mp();
-        free_memory(heap);
+        cleanup_after_vm(heap);
     }
 }
 
@@ -358,10 +380,7 @@ int run_repl(void) {
     } else {
         exit_code = pyexec_friendly_repl();
     }
-    reset_port();
-    reset_board();
-    stop_mp();
-    free_memory(heap);
+    cleanup_after_vm(heap);
     autoreload_resume();
     return exit_code;
 }
@@ -397,7 +416,8 @@ int __attribute__((used)) main(void) {
 
     // By default our internal flash is readonly to local python code and
     // writable over USB. Set it here so that boot.py can change it.
-    filesystem_writable_by_python(false);
+    filesystem_set_internal_concurrent_write_protection(true);
+    filesystem_set_internal_writable_by_usb(true);
 
     run_boot_py(safe_mode);
 

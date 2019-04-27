@@ -27,7 +27,6 @@
 #include "supervisor/shared/safe_mode.h"
 
 #include "mphalport.h"
-// #include "py/mpconfig.h"
 
 #include "shared-bindings/digitalio/DigitalInOut.h"
 
@@ -77,7 +76,8 @@ safe_mode_t wait_for_safe_mode_reset(void) {
     return NO_SAFE_MODE;
 }
 
-void reset_into_safe_mode(safe_mode_t reason) {
+// Don't inline this so it's easy to break on it from GDB.
+void __attribute__((noinline,)) reset_into_safe_mode(safe_mode_t reason) {
     if (current_safe_mode > BROWNOUT && reason > BROWNOUT) {
         while (true) {
             // This very bad because it means running in safe mode didn't save us. Only ignore brownout
@@ -105,7 +105,7 @@ void print_safe_mode_message(safe_mode_t reason) {
     if (reason != NO_SAFE_MODE) {
         serial_write("\r\n");
         serial_write_compressed(translate("You are running in safe mode which means something unanticipated happened.\n"));
-        if (reason == HARD_CRASH || reason == MICROPY_NLR_JUMP_FAIL || reason == MICROPY_FATAL_ERROR) {
+        if (reason == HARD_CRASH || reason == MICROPY_NLR_JUMP_FAIL || reason == MICROPY_FATAL_ERROR || reason == GC_ALLOC_OUTSIDE_VM) {
             serial_write_compressed(translate("Looks like our core CircuitPython code crashed hard. Whoops!\nPlease file an issue at https://github.com/adafruit/circuitpython/issues\n with the contents of your CIRCUITPY drive and this message:\n"));
             if (reason == HARD_CRASH) {
                 serial_write_compressed(translate("Crash into the HardFault_Handler.\n"));
@@ -113,6 +113,8 @@ void print_safe_mode_message(safe_mode_t reason) {
                 serial_write_compressed(translate("MicroPython NLR jump failed. Likely memory corruption.\n"));
             } else if (reason == MICROPY_FATAL_ERROR) {
                 serial_write_compressed(translate("MicroPython fatal error.\n"));
+            } else if (reason == GC_ALLOC_OUTSIDE_VM) {
+                serial_write_compressed(translate("Attempted heap allocation when MicroPython VM not running.\n"));
             }
         } else if (reason == BROWNOUT) {
             serial_write_compressed(translate("The microcontroller's power dipped. Please make sure your power supply provides\nenough power for the whole circuit and press reset (after ejecting CIRCUITPY).\n"));

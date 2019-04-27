@@ -39,20 +39,24 @@
 
 //| .. currentmodule:: displayio
 //|
-//| :class:`ParallelBus` -- Manage updating a display over SPI four wire protocol
+//| :class:`ParallelBus` -- Manage updating a display over 8-bit parallel bus
 //| ==============================================================================
 //|
-//| Manage updating a display over SPI four wire protocol in the background while Python code runs.
-//| It doesn't handle display initialization.
-//|
-//| .. warning:: This will be changed before 4.0.0. Consider it very experimental.
+//| Manage updating a display over 8-bit parallel bus in the background while Python code runs. This
+//| protocol may be refered to as 8080-I Series Parallel Interface in datasheets. It doesn't handle
+//| display initialization.
 //|
 //| .. class:: ParallelBus(*, data0, command, chip_select, write, read, reset)
 //|
 //|   Create a ParallelBus object associated with the given pins. The bus is inferred from data0
 //|   by implying the next 7 additional pins on a given GPIO port.
 //|
-//|   :param microcontroller.Pin: The first data pin. The rest are implied
+//|   The parallel bus and pins are then in use by the display until `displayio.release_displays()`
+//|   is called even after a reload. (It does this so CircuitPython can use the display after your
+//|   code is done.) So, the first time you initialize a display bus in code.py you should call
+//|   :py:func`displayio.release_displays` first, otherwise it will error after the first code.py run.
+//|
+//|   :param microcontroller.Pin data0: The first data pin. The rest are implied
 //|   :param microcontroller.Pin command: Data or command pin
 //|   :param microcontroller.Pin chip_select: Chip select pin
 //|   :param microcontroller.Pin write: Write pin
@@ -102,16 +106,33 @@ STATIC mp_obj_t displayio_parallelbus_make_new(const mp_obj_type_t *type, size_t
     return self;
 }
 
-
 //|   .. method:: send(command, data)
 //|
+//|     Sends the given command value followed by the full set of data. Display state, such as
+//|     vertical scroll, set via ``send`` may or may not be reset once the code is done.
 //|
-STATIC mp_obj_t displayio_parallelbus_obj_send(size_t n_args, const mp_obj_t *pos_args, mp_map_t *kw_args) {
-    mp_raise_NotImplementedError(translate("displayio is a work in progress"));
+STATIC mp_obj_t displayio_parallelbus_obj_send(mp_obj_t self, mp_obj_t command_obj, mp_obj_t data_obj) {
+    mp_int_t command_int = MP_OBJ_SMALL_INT_VALUE(command_obj);
+    if (!MP_OBJ_IS_SMALL_INT(command_obj) || command_int > 255 || command_int < 0) {
+        mp_raise_ValueError(translate("Command must be an int between 0 and 255"));
+    }
+    uint8_t command = command_int;
+    mp_buffer_info_t bufinfo;
+    mp_get_buffer_raise(data_obj, &bufinfo, MP_BUFFER_READ);
+
+    // Wait for display bus to be available.
+    while (!common_hal_displayio_parallelbus_begin_transaction(self)) {
+#ifdef MICROPY_VM_HOOK_LOOP
+        MICROPY_VM_HOOK_LOOP ;
+#endif
+    }
+    common_hal_displayio_parallelbus_send(self, true, &command, 1);
+    common_hal_displayio_parallelbus_send(self, false, ((uint8_t*) bufinfo.buf), bufinfo.len);
+    common_hal_displayio_parallelbus_end_transaction(self);
 
     return mp_const_none;
 }
-MP_DEFINE_CONST_FUN_OBJ_KW(displayio_parallelbus_send_obj, 1, displayio_parallelbus_obj_send);
+MP_DEFINE_CONST_FUN_OBJ_3(displayio_parallelbus_send_obj, displayio_parallelbus_obj_send);
 
 STATIC const mp_rom_map_elem_t displayio_parallelbus_locals_dict_table[] = {
     { MP_ROM_QSTR(MP_QSTR_send), MP_ROM_PTR(&displayio_parallelbus_send_obj) },

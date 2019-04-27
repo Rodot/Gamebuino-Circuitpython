@@ -42,8 +42,6 @@
 //| much slower pixel load times. These load times may result in frame tearing where only part of
 //| the image is visible.
 //|
-//| .. warning:: This will likely be changed before 4.0.0. Consider it very experimental.
-//|
 //| It's easiest to use on a board with a built in display such as the `Hallowing M0 Express
 //| <https://www.adafruit.com/product/3900>`_.
 //|
@@ -54,21 +52,22 @@
 //|   import time
 //|   import pulseio
 //|
-//|   backlight = pulseio.PWMOut(board.TFT_BACKLIGHT)
+//|   board.DISPLAY.auto_brightness = False
+//|   board.DISPLAY.brightness = 0
 //|   splash = displayio.Group()
 //|   board.DISPLAY.show(splash)
 //|
 //|   with open("/sample.bmp", "rb") as f:
 //|       odb = displayio.OnDiskBitmap(f)
-//|       face = displayio.Sprite(odb, pixel_shader=displayio.ColorConverter(), position=(0,0))
+//|       face = displayio.TileGrid(odb, pixel_shader=displayio.ColorConverter(), position=(0,0))
 //|       splash.append(face)
 //|       # Wait for the image to load.
 //|       board.DISPLAY.wait_for_frame()
 //|
 //|       # Fade up the backlight
 //|       for i in range(100):
-//|           backlight.duty_cycle = i * (2 ** 15) // 100
-//|           time.sleep(0.01)
+//|           board.DISPLAY.brightness = 0.01 * i
+//|           time.sleep(0.05)
 //|
 //|       # Wait forever
 //|       while True:

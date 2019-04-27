@@ -76,7 +76,7 @@ STATIC mp_obj_t bleio_characteristic_buffer_make_new(const mp_obj_type_t *type, 
 
     const int buffer_size = args[ARG_buffer_size].u_int;
     if (buffer_size < 1) {
-        mp_raise_ValueError(translate("buffer_size must be >= 1"));
+        mp_raise_ValueError_varg(translate("%q must be >= 1"), MP_QSTR_buffer_size);
     }
 
     if (!MP_OBJ_IS_TYPE(characteristic, &bleio_characteristic_type)) {
@@ -144,7 +144,7 @@ STATIC mp_uint_t bleio_characteristic_buffer_ioctl(mp_obj_t self_in, mp_uint_t r
     raise_error_if_deinited(common_hal_bleio_characteristic_buffer_deinited(self));
     raise_error_if_not_connected(self);
     if (!common_hal_bleio_characteristic_buffer_connected(self)) {
-        mp_raise_ValueError(translate("Not connected."));
+        mp_raise_ValueError(translate("Not connected"));
     }
     mp_uint_t ret;
     if (request == MP_IOCTL_POLL) {

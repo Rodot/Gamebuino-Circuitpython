@@ -50,7 +50,22 @@
 
 typedef void (*ble_drv_evt_handler_t)(ble_evt_t*, void*);
 
-void ble_drv_reset();
+typedef enum {
+    SD_FLASH_OPERATION_DONE,
+    SD_FLASH_OPERATION_IN_PROGRESS,
+    SD_FLASH_OPERATION_ERROR,
+} sd_flash_operation_status_t;
+
+// Flag indicating progress of internal flash operation.
+extern sd_flash_operation_status_t sd_flash_operation_status;
+
+typedef struct ble_drv_evt_handler_entry {
+    struct ble_drv_evt_handler_entry *next;
+    void *param;
+    ble_drv_evt_handler_t func;
+} ble_drv_evt_handler_entry_t;
+
+void ble_drv_reset(void);
 void ble_drv_add_event_handler(ble_drv_evt_handler_t func, void *param);
 void ble_drv_remove_event_handler(ble_drv_evt_handler_t func, void *param);
 

@@ -338,6 +338,13 @@ typedef struct _mp_rom_obj_t { mp_const_obj_t o; } mp_rom_obj_t;
 #define MP_DEFINE_CONST_STATICMETHOD_OBJ(obj_name, fun_name) const mp_rom_obj_static_class_method_t obj_name = {{&mp_type_staticmethod}, fun_name}
 #define MP_DEFINE_CONST_CLASSMETHOD_OBJ(obj_name, fun_name) const mp_rom_obj_static_class_method_t obj_name = {{&mp_type_classmethod}, fun_name}
 
+// Declare a module as a builtin, processed by makemoduledefs.py
+// param module_name: MP_QSTR_<module name>
+// param obj_module: mp_obj_module_t instance
+// prarm enabled_define: used as `#if (enabled_define) around entry`
+
+#define MP_REGISTER_MODULE(module_name, obj_module, enabled_define)
+
 // Underlying map/hash table implementation (not dict object or map function)
 
 typedef struct _mp_map_elem_t {
@@ -844,6 +851,8 @@ typedef struct {
     mp_int_t step;
 } mp_bound_slice_t;
 
+// Compute the new length of a sequence and ensure an exception is thrown on overflow.
+size_t mp_seq_multiply_len(size_t item_sz, size_t len);
 void mp_seq_multiply(const void *items, size_t item_sz, size_t len, size_t times, void *dest);
 #if MICROPY_PY_BUILTINS_SLICE
 bool mp_seq_get_fast_slice_indexes(mp_uint_t len, mp_obj_t slice, mp_bound_slice_t *indexes);

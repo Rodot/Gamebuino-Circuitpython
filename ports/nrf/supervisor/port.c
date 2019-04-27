@@ -41,10 +41,14 @@
 #include "common-hal/bleio/__init__.h"
 #include "common-hal/busio/I2C.h"
 #include "common-hal/busio/SPI.h"
+#include "common-hal/busio/UART.h"
 #include "common-hal/pulseio/PWMOut.h"
 #include "common-hal/pulseio/PulseOut.h"
 #include "common-hal/pulseio/PulseIn.h"
+#include "common-hal/rtc/RTC.h"
 #include "tick.h"
+
+#include "shared-bindings/rtc/__init__.h"
 
 static void power_warning_handler(void) {
     reset_into_safe_mode(BROWNOUT);
@@ -71,6 +75,10 @@ safe_mode_t port_init(void) {
     // Configure millisecond timer initialization.
     tick_init();
 
+    #if CIRCUITPY_RTC
+    rtc_init();
+    #endif
+
     // Will do usb_init() if chip supports USB.
     board_init();
 
@@ -84,10 +92,15 @@ void reset_port(void) {
 
     i2c_reset();
     spi_reset();
+    uart_reset();
     pwmout_reset();
     pulseout_reset();
     pulsein_reset();
     timers_reset();
+
+    #if CIRCUITPY_RTC
+    rtc_reset();
+    #endif
 
     bleio_reset();
 

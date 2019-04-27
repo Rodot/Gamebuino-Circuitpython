@@ -68,9 +68,13 @@
 
 #include "tusb.h"
 
-#ifdef CIRCUITPY_GAMEPAD_TICKS
+#if CIRCUITPY_GAMEPAD
 #include "shared-module/gamepad/__init__.h"
 #endif
+#if CIRCUITPY_GAMEPADSHIFT
+#include "shared-module/gamepadshift/__init__.h"
+#endif
+#include "shared-module/_pew/PewPew.h"
 
 extern volatile bool mp_msc_enabled;
 
@@ -164,11 +168,14 @@ safe_mode_t port_init(void) {
     // Configure millisecond timer initialization.
     tick_init();
 
-#ifndef PIRKEY_M0
+#if CIRCUITPY_RTC
     rtc_init();
 #endif
 
     init_shared_dma();
+
+    // Reset everything into a known state before board_init.
+    reset_port();
 
     // Init the board last so everything else is ready
     board_init();
@@ -194,31 +201,42 @@ safe_mode_t port_init(void) {
 void reset_port(void) {
     reset_sercoms();
 
-#if defined(EXPRESS_BOARD) && !defined(__SAMR21G18A__)
+#if CIRCUITPY_AUDIOIO
     audio_dma_reset();
     audioout_reset();
-    #if !defined(__SAMD51G19A__) && !defined(__SAMD51G18A__)
+#endif
+#if CIRCUITPY_AUDIOBUSIO
     i2sout_reset();
-    #endif
     //pdmin_reset();
 #endif
-#ifdef SAMD21
+
+#if CIRCUITPY_TOUCHIO
     touchin_reset();
 #endif
     eic_reset();
+#if CIRCUITPY_PULSEIO
     pulseout_reset();
     pwmout_reset();
+#endif
 
-#ifndef PIRKEY_M0
+#if CIRCUITPY_ANALOGIO
     analogin_reset();
     analogout_reset();
+#endif
+#if CIRCUITPY_RTC
     rtc_reset();
 #endif
 
     reset_gclks();
 
-#ifdef CIRCUITPY_GAMEPAD_TICKS
+#if CIRCUITPY_GAMEPAD
     gamepad_reset();
+#endif
+#if CIRCUITPY_GAMEPADSHIFT
+    gamepadshift_reset();
+#endif
+#if CIRCUITPY_PEW
+    pew_reset();
 #endif
 
     reset_event_system();
@@ -248,14 +266,20 @@ void reset_cpu(void) {
     reset();
 }
 
-extern uint32_t _ebss;
-// Place the word to save just after our BSS section that gets blanked.
+// Place the word to save 8k from the end of RAM so we and the bootloader don't clobber it.
+#ifdef SAMD21
+uint32_t* safe_word = (uint32_t*) (HMCRAMC0_ADDR + HMCRAMC0_SIZE - 0x2000);
+#endif
+#ifdef SAMD51
+uint32_t* safe_word = (uint32_t*) (HSRAM_ADDR + HSRAM_SIZE - 0x2000);
+#endif
+
 void port_set_saved_word(uint32_t value) {
-    _ebss = value;
+    *safe_word = value;
 }
 
 uint32_t port_get_saved_word(void) {
-    return _ebss;
+    return *safe_word;
 }
 
 #ifndef NO_HARDFAULT_HANDLER

@@ -35,15 +35,8 @@
 
 #define CIRCUITPY_AUTORELOAD_DELAY_MS 500
 
-// If you change this, then make sure to update the linker scripts as well to
-// make sure you don't overwrite code
-#define PORT_HEAP_SIZE              (128 * 1024)
 // TODO #define CIRCUITPY_INTERNAL_NVM_SIZE 8192
 
 #define BOARD_FLASH_SIZE (FLASH_SIZE - 0x4000 - CIRCUITPY_INTERNAL_NVM_SIZE)
 
 #define BOARD_HAS_CRYSTAL 1  // according to the schematic we do
-
-// See https://github.com/adafruit/circuitpython/issues/1300, circuitpython
-// doesn't yet support NFC so just force those pins to be GPIO.
-#define CONFIG_NFCT_PINS_AS_GPIOS

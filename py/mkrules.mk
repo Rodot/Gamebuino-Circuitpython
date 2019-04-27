@@ -20,12 +20,12 @@ endif
 # can be located. By following this scheme, it allows a single build rule
 # to be used to compile all .c files.
 
-vpath %.S . $(TOP)
+vpath %.S . $(TOP) $(USER_C_MODULES)
 $(BUILD)/%.o: %.S
 	$(STEPECHO) "CC $<"
 	$(Q)$(CC) $(CFLAGS) -c -o $@ $<
 
-vpath %.s . $(TOP)
+vpath %.s . $(TOP) $(USER_C_MODULES)
 $(BUILD)/%.o: %.s
 	$(STEPECHO) "AS $<"
 	$(Q)$(AS) -o $@ $<
@@ -42,12 +42,16 @@ $(Q)$(CC) $(CFLAGS) -c -MD -o $@ $<
   $(RM) -f $(@:.o=.d)
 endef
 
+<<<<<<< HEAD
 define compile_cpp
 $(STEPECHO) "C++ $<"
 $(Q)$(CXX) $(CPPFLAGS) -c -MD -o $@ $<
 endef
 
 vpath %.c . $(TOP)
+=======
+vpath %.c . $(TOP) $(USER_C_MODULES)
+>>>>>>> e072f0d893eb7854b01a7c4e1a8cfcae9af51026
 $(BUILD)/%.o: %.c
 	$(call compile_c)
 
@@ -69,7 +73,7 @@ $(BUILD)/%.o: %.cpp
 
 QSTR_GEN_EXTRA_CFLAGS += -I$(BUILD)/tmp
 
-vpath %.c . $(TOP)
+vpath %.c . $(TOP) $(USER_C_MODULES)
 
 $(BUILD)/%.pp: %.c
 	$(STEPECHO) "PreProcess $<"
