@@ -39,6 +39,22 @@ void gamebuino_meta_reset() {
 	gbptr = nullptr;
 }
 
+bool gamebuino_meta_collide_rect_rect(const int16_t x1, const int16_t y1, const int16_t w1, const int16_t h1, const int16_t x2, const int16_t y2, const int16_t w2, const int16_t h2) {
+	return gb()->collide.rectRect((int16_t)x1, (int16_t)y1, (int16_t)w1, (int16_t)h1, (int16_t)x2, (int16_t)y2, (int16_t)w2, (int16_t)h2);
+}
+
+bool gamebuino_meta_collide_point_rect(const int16_t pointX, const int16_t pointY, const uint16_t rectX, const uint16_t rectY, const uint16_t rectW, const uint16_t rectH) {
+	return gb()->collide.pointRect((int16_t)pointX, (int16_t)pointY, (uint16_t)rectX, (uint16_t)rectY, (uint16_t)rectW, (uint16_t)rectH);
+}
+
+bool gamebuino_meta_collide_circle_circle(const int16_t centerX1, const int16_t centerY1, const int16_t r1, const int16_t centerX2, const int16_t centerY2, const int16_t r2) {
+	return gb()->collide.circleCircle((int16_t)centerX1, (int16_t)centerY1, (int16_t)r1, (int16_t)centerX2, (int16_t)centerY2, (int16_t)r2);
+}
+
+bool gamebuino_meta_collide_point_circle(const int16_t pointX, const int16_t pointY, const int16_t centerX, const int16_t centerY, const int16_t r) {
+	return gb()->collide.pointCircle((int16_t)pointX, (int16_t)pointY, (int16_t)centerX, (int16_t)centerY, (int16_t)r);
+}
+
 void gamebuino_meta_display_clear() {
 	gb()->display.clear();
 }
@@ -205,7 +221,7 @@ void gamebuino_meta_get_default_name(char* str) {
 	gb()->getDefaultName(str);
 }
 void gamebuino_meta_titlescreen() {
-	const char version[] = "Gamebuino\nCircuitpython\nVersion 0.0.4";
+	const char version[] = "Gamebuino\nCircuitpython\nVersion 0.0.5";
 	if (PM->RCAUSE.bit.POR) {
 		gb()->startScreen();
 	}

@@ -6,6 +6,75 @@
 #include "py/objint.h"
 #include <string.h>
 
+bool gamebuino_meta_collide_rect_rect(const int16_t, const int16_t, const int16_t, const int16_t, const int16_t, const int16_t, const int16_t, const int16_t);
+bool gamebuino_meta_collide_point_rect(const int16_t, const int16_t, const uint16_t, const uint16_t, const uint16_t, const uint16_t);
+bool gamebuino_meta_collide_circle_circle(const int16_t, const int16_t, const int16_t, const int16_t, const int16_t, const int16_t);
+bool gamebuino_meta_collide_point_circle(const int16_t, const int16_t, const int16_t, const int16_t, const int16_t);
+
+STATIC mp_obj_t gbm_collide_rect_rect(size_t n_args, const mp_obj_t *args) {
+    return mp_obj_new_bool(gamebuino_meta_collide_rect_rect(
+        mp_obj_get_int(args[0]),
+        mp_obj_get_int(args[1]),
+        mp_obj_get_int(args[2]),
+        mp_obj_get_int(args[3]),
+        mp_obj_get_int(args[4]),
+        mp_obj_get_int(args[5]),
+        mp_obj_get_int(args[6]),
+        mp_obj_get_int(args[7])
+    ));
+}
+STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(gbm_collide_rect_rect_obj, 8, 8, gbm_collide_rect_rect);
+
+STATIC mp_obj_t gbm_collide_point_rect(size_t n_args, const mp_obj_t *args) {
+    return mp_obj_new_bool(gamebuino_meta_collide_point_rect(
+        mp_obj_get_int(args[0]),
+        mp_obj_get_int(args[1]),
+        mp_obj_get_int(args[2]),
+        mp_obj_get_int(args[3]),
+        mp_obj_get_int(args[4]),
+        mp_obj_get_int(args[5])
+    ));
+}
+STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(gbm_collide_point_rect_obj, 6, 6, gbm_collide_point_rect);
+
+STATIC mp_obj_t gbm_collide_circle_circle(size_t n_args, const mp_obj_t *args) {
+    return mp_obj_new_bool(gamebuino_meta_collide_circle_circle(
+        mp_obj_get_int(args[0]),
+        mp_obj_get_int(args[1]),
+        mp_obj_get_int(args[2]),
+        mp_obj_get_int(args[3]),
+        mp_obj_get_int(args[4]),
+        mp_obj_get_int(args[5])
+    ));
+}
+STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(gbm_collide_circle_circle_obj, 6, 6, gbm_collide_circle_circle);
+
+STATIC mp_obj_t gbm_collide_point_circle(size_t n_args, const mp_obj_t *args) {
+    return mp_obj_new_bool(gamebuino_meta_collide_point_circle(
+        mp_obj_get_int(args[0]),
+        mp_obj_get_int(args[1]),
+        mp_obj_get_int(args[2]),
+        mp_obj_get_int(args[3]),
+        mp_obj_get_int(args[4])
+    ));
+}
+STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(gbm_collide_point_circle_obj, 5, 5, gbm_collide_point_circle);
+
+STATIC const mp_map_elem_t gbm_collide_table[] = {
+    { MP_OBJ_NEW_QSTR(MP_QSTR_rectRect), (mp_obj_t)&gbm_collide_rect_rect_obj },
+    { MP_OBJ_NEW_QSTR(MP_QSTR_pointRect), (mp_obj_t)&gbm_collide_point_rect_obj },
+    { MP_OBJ_NEW_QSTR(MP_QSTR_circleCircle), (mp_obj_t)&gbm_collide_circle_circle_obj },
+    { MP_OBJ_NEW_QSTR(MP_QSTR_pointCircle), (mp_obj_t)&gbm_collide_point_circle_obj },
+};
+STATIC MP_DEFINE_CONST_DICT (
+    mp_dict_gamebuino_meta_collide,
+    gbm_collide_table
+);
+const mp_obj_module_t mp_module_gamebuino_meta_collide = {
+    .base = { &mp_type_module },
+    .globals = (mp_obj_dict_t*)&mp_dict_gamebuino_meta_collide,
+};
+
 void gamebuino_meta_display_clear(void);
 void gamebuino_meta_display_clear_color(const uint16_t);
 void gamebuino_meta_display_fill(void);
@@ -521,6 +590,7 @@ STATIC const mp_map_elem_t gbm_globals_table[] = {
     { MP_OBJ_NEW_QSTR(MP_QSTR_getFreeRam), (mp_obj_t)&gbm_get_free_ram_obj },
     { MP_OBJ_NEW_QSTR(MP_QSTR_getDefaultName), (mp_obj_t)&gbm_get_default_name_obj },
     
+    { MP_OBJ_NEW_QSTR(MP_QSTR_collide), (mp_obj_t)&mp_module_gamebuino_meta_collide },
     { MP_OBJ_NEW_QSTR(MP_QSTR_display), (mp_obj_t)&mp_module_gamebuino_meta_display },
     { MP_OBJ_NEW_QSTR(MP_QSTR_lights), (mp_obj_t)&mp_module_gamebuino_meta_lights },
     { MP_OBJ_NEW_QSTR(MP_QSTR_buttons), (mp_obj_t)&mp_module_gamebuino_meta_buttons },
