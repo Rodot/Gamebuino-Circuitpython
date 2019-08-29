@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-05-13 17:34-0700\n"
+"POT-Creation-Date: 2019-07-19 10:38-0700\n"
 "PO-Revision-Date: 2018-07-27 11:55-0700\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -450,6 +450,14 @@ msgstr ""
 msgid "Command must be an int between 0 and 255"
 msgstr ""
 
+#: py/persistentcode.c
+msgid "Corrupt .mpy file"
+msgstr ""
+
+#: py/emitglue.c
+msgid "Corrupt raw code"
+msgstr ""
+
 #: ports/nrf/common-hal/bleio/UUID.c
 #, c-format
 msgid "Could not decode ble_uuid, err 0x%04x"
@@ -506,6 +514,7 @@ msgid "Drive mode not used when direction is input."
 msgstr ""
 
 #: ports/atmel-samd/common-hal/frequencyio/FrequencyIn.c
+#: ports/atmel-samd/common-hal/ps2io/Ps2.c
 #: ports/atmel-samd/common-hal/pulseio/PulseIn.c
 msgid "EXTINT channel already in use"
 msgstr ""
@@ -532,6 +541,10 @@ msgstr ""
 #: shared-module/_pixelbuf/PixelBuf.c
 #, c-format
 msgid "Expected tuple of length %d, got %d"
+msgstr ""
+
+#: shared-bindings/ps2io/Ps2.c
+msgid "Failed sending command."
 msgstr ""
 
 #: ports/nrf/common-hal/bleio/Device.c
@@ -827,6 +840,10 @@ msgid "LHS of keyword arg must be an id"
 msgstr ""
 
 #: shared-module/displayio/Group.c
+msgid "Layer already in a group."
+msgstr ""
+
+#: shared-module/displayio/Group.c
 msgid "Layer must be a Group or TileGrid subclass."
 msgstr ""
 
@@ -905,6 +922,10 @@ msgstr ""
 
 #: shared-bindings/os/__init__.c
 msgid "No hardware random available"
+msgstr ""
+
+#: ports/atmel-samd/common-hal/ps2io/Ps2.c
+msgid "No hardware support on clk pin"
 msgstr ""
 
 #: ports/atmel-samd/common-hal/frequencyio/FrequencyIn.c
@@ -987,6 +1008,10 @@ msgstr ""
 
 #: py/builtinhelp.c
 msgid "Plus any modules on the filesystem\n"
+msgstr ""
+
+#: shared-bindings/ps2io/Ps2.c
+msgid "Pop from an empty Ps2 buffer"
 msgstr ""
 
 #: main.c
@@ -1131,7 +1156,11 @@ msgid "Tile height must exactly divide bitmap height"
 msgstr ""
 
 #: shared-bindings/displayio/TileGrid.c
-msgid "Tile indices must be 0 - 255"
+msgid "Tile index out of bounds"
+msgstr ""
+
+#: shared-bindings/displayio/TileGrid.c shared-module/displayio/TileGrid.c
+msgid "Tile value out of bounds"
 msgstr ""
 
 #: shared-bindings/displayio/TileGrid.c
@@ -2131,7 +2160,7 @@ msgstr ""
 msgid "object not callable"
 msgstr ""
 
-#: py/sequence.c
+#: py/sequence.c shared-bindings/displayio/Group.c
 msgid "object not in sequence"
 msgstr ""
 
@@ -2381,10 +2410,6 @@ msgstr ""
 
 #: shared-bindings/touchio/TouchIn.c
 msgid "threshold must be in the range 0-65536"
-msgstr ""
-
-#: shared-bindings/displayio/TileGrid.c
-msgid "tile index out of bounds"
 msgstr ""
 
 #: shared-bindings/time/__init__.c
