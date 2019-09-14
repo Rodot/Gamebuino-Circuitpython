@@ -233,6 +233,9 @@ void common_hal_pulseio_pwmout_deinit(pulseio_pwmout_obj_t* self) {
     // Disconnect pin from channel.
     pwm->PSEL.OUT[self->channel] = 0xFFFFFFFF;
 
+    reset_pin_number(self->pin_number);
+    self->pin_number = NO_PIN;
+
     for(int i=0; i < CHANNELS_PER_PWM; i++) {
         if (self->pwm->PSEL.OUT[i] != 0xFFFFFFFF) {
             // Some channel is still being used, so don't disable.
