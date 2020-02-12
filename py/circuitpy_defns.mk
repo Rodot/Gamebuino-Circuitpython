@@ -60,7 +60,6 @@ BASE_CPPFLAGS = \
 	-fsingle-precision-constant \
 	-fno-strict-aliasing \
 	-Wno-endif-labels \
-	-Werror-implicit-function-declaration \
 	-Wfloat-equal \
 	-Wundef \
 	-Wwrite-strings \
