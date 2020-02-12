@@ -34,7 +34,7 @@ INC = []
 GB_SRC_DIR = os.path.expanduser("~") + "/.arduino15/packages/gamebuino/hardware/samd/1.2.1/"
 
 SCAN_DIRS = [
-	["modules/Gamebuino-Meta", 1],
+	["modules/Gamebuino-META", 1],
 #	[GB_SRC_DIR + "libraries/SPI", 1],
 #	[GB_SRC_DIR + "cores", 2],
 #	[GB_SRC_DIR + "variants", 2],
