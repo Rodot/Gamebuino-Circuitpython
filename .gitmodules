@@ -83,9 +83,6 @@
 [submodule "tools/adabot"]
 	path = tools/adabot
 	url = https://github.com/adafruit/adabot.git
-[submodule "gamebuino-meta"]
-	path = ports/atmel-samd/modules/Gamebuino-Meta
-	url = https://github.com/Gamebuino/Gamebuino-Meta.git
 [submodule "tools/bitmap_font"]
 	path = tools/bitmap_font
 	url = https://github.com/adafruit/Adafruit_CircuitPython_BitmapFont.git
@@ -98,3 +95,6 @@
 [submodule "frozen/circuitpython-stage"]
 	path = frozen/circuitpython-stage
 	url = https://github.com/python-ugame/circuitpython-stage.git
+[submodule "ports/atmel-samd/modules/Gamebuino-META"]
+	path = ports/atmel-samd/modules/Gamebuino-META
+	url = https://github.com/Gamebuino/Gamebuino-META
