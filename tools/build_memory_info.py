@@ -61,10 +61,11 @@ for region in regions:
     space = M_PATTERN.sub(M_REPLACE, space)
     regions[region] = eval(space)
 
+ram_region = regions["RAM"]
 free_flash = regions["FLASH"] - text - data
 free_ram = regions["RAM"] - data - bss
 print(free_flash, "bytes free in flash out of", regions["FLASH"], "bytes (", regions["FLASH"] / 1024, "kb ).")
-print(free_ram, "bytes free in ram for stack out of", regions["RAM"], "bytes (", regions["RAM"] / 1024, "kb ).")
+print("{} bytes free in ram for stack and heap out of {} bytes ({}kB).".format(free_ram, ram_region, ram_region / 1024))
 print()
 
 # Check that we have free flash space. GCC doesn't fail when the text + data

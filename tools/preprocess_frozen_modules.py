@@ -34,6 +34,7 @@ def copy_and_process(in_dir, out_dir):
 
         # Skip library examples directories.
         if Path(root).name in ['examples', 'docs', 'tests']:
+            del subdirs[:]
             continue
 
         for file in files:

@@ -101,7 +101,6 @@ endif
 
 #Debugging/Optimization
 ifeq ($(DEBUG), 1)
-  # Turn on Python modules useful for debugging (e.g. uheap, ustack).
   CFLAGS += -ggdb
   # You may want to disable -flto if it interferes with debugging.
   CFLAGS += -flto
@@ -118,6 +117,7 @@ else
     CFLAGS += -finline-limit=50
     CPPFLAGS += -finline-limit=50
   endif
+
   ifdef CFLAGS_INLINE_LIMIT
     CFLAGS += -finline-limit=$(CFLAGS_INLINE_LIMIT)
     CPPFLAGS += -finline-limit=$(CFLAGS_INLINE_LIMIT)

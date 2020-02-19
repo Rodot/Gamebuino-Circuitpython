@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-04-17 11:22-0700\n"
+"POT-Creation-Date: 2019-07-19 10:38-0700\n"
 "PO-Revision-Date: 2019-03-19 18:37-0700\n"
 "Last-Translator: Radomir Dopieralski <circuitpython@sheep.art.pl>\n"
 "Language-Team: pl\n"
@@ -343,6 +343,10 @@ msgstr "Bufor musi mieć 16 bajtów."
 msgid "Bytes must be between 0 and 255."
 msgstr "Bytes musi być między 0 a 255."
 
+#: py/objtype.c
+msgid "Call super().__init__() before accessing native object."
+msgstr ""
+
 #: shared-bindings/_pixelbuf/PixelBuf.c
 #, c-format
 msgid "Can not use dotstar with %s"
@@ -449,6 +453,14 @@ msgstr "Kolumny muszą być typu digitalio.DigitalInOut"
 msgid "Command must be an int between 0 and 255"
 msgstr "Komenda musi być int pomiędzy 0 a 255"
 
+#: py/persistentcode.c
+msgid "Corrupt .mpy file"
+msgstr ""
+
+#: py/emitglue.c
+msgid "Corrupt raw code"
+msgstr ""
+
 #: ports/nrf/common-hal/bleio/UUID.c
 #, c-format
 msgid "Could not decode ble_uuid, err 0x%04x"
@@ -505,6 +517,7 @@ msgid "Drive mode not used when direction is input."
 msgstr "Tryb sterowania nieużywany w trybie wejścia."
 
 #: ports/atmel-samd/common-hal/frequencyio/FrequencyIn.c
+#: ports/atmel-samd/common-hal/ps2io/Ps2.c
 #: ports/atmel-samd/common-hal/pulseio/PulseIn.c
 msgid "EXTINT channel already in use"
 msgstr "Kanał EXTINT w użyciu"
@@ -532,6 +545,10 @@ msgstr "Oczekiwano UUID"
 #, c-format
 msgid "Expected tuple of length %d, got %d"
 msgstr "Oczekiwano krotkę długości %d, otrzymano %d"
+
+#: shared-bindings/ps2io/Ps2.c
+msgid "Failed sending command."
+msgstr ""
 
 #: ports/nrf/common-hal/bleio/Device.c
 msgid "Failed to acquire mutex"
@@ -828,6 +845,10 @@ msgid "LHS of keyword arg must be an id"
 msgstr "Lewa strona argumentu nazwanego musi być nazwą"
 
 #: shared-module/displayio/Group.c
+msgid "Layer already in a group."
+msgstr ""
+
+#: shared-module/displayio/Group.c
 msgid "Layer must be a Group or TileGrid subclass."
 msgstr "Layer musi dziedziczyć z Group albo TileGrid"
 
@@ -876,9 +897,9 @@ msgstr "Krytyczny błąd MicroPythona.\n"
 msgid "Microphone startup delay must be in range 0.0 to 1.0"
 msgstr "Opóźnienie włączenia mikrofonu musi być w zakresie od 0.0 do 1.0"
 
-#: shared-bindings/displayio/Display.c
-msgid "Must be a Group subclass."
-msgstr "Musi dziedziczyć z Group."
+#: shared-bindings/displayio/Group.c
+msgid "Must be a %q subclass."
+msgstr ""
 
 #: ports/atmel-samd/common-hal/analogio/AnalogOut.c
 msgid "No DAC on chip"
@@ -912,6 +933,10 @@ msgstr "Brak wolnych GLCK"
 #: shared-bindings/os/__init__.c
 msgid "No hardware random available"
 msgstr "Brak generatora liczb losowych"
+
+#: ports/atmel-samd/common-hal/ps2io/Ps2.c
+msgid "No hardware support on clk pin"
+msgstr ""
 
 #: ports/atmel-samd/common-hal/frequencyio/FrequencyIn.c
 #: ports/atmel-samd/common-hal/pulseio/PulseIn.c
@@ -994,6 +1019,10 @@ msgstr "Piksel poza granicami bufora"
 #: py/builtinhelp.c
 msgid "Plus any modules on the filesystem\n"
 msgstr "Oraz moduły w systemie plików\n"
+
+#: shared-bindings/ps2io/Ps2.c
+msgid "Pop from an empty Ps2 buffer"
+msgstr ""
 
 #: main.c
 msgid "Press any key to enter the REPL. Use CTRL-D to reload."
@@ -1103,6 +1132,12 @@ msgstr ""
 
 #: supervisor/shared/safe_mode.c
 msgid ""
+"The `microcontroller` module was used to boot into safe mode. Press reset to "
+"exit safe mode.\n"
+msgstr ""
+
+#: supervisor/shared/safe_mode.c
+msgid ""
 "The microcontroller's power dipped. Please make sure your power supply "
 "provides\n"
 "enough power for the whole circuit and press reset (after ejecting "
@@ -1141,8 +1176,12 @@ msgid "Tile height must exactly divide bitmap height"
 msgstr "Wysokość bitmapy musi być wielokrotnością wysokości kafelka"
 
 #: shared-bindings/displayio/TileGrid.c
-msgid "Tile indices must be 0 - 255"
-msgstr "Indeks kafelka musi być pomiędzy 0 a 255 włącznie"
+msgid "Tile index out of bounds"
+msgstr ""
+
+#: shared-bindings/displayio/TileGrid.c shared-module/displayio/TileGrid.c
+msgid "Tile value out of bounds"
+msgstr ""
 
 #: shared-bindings/displayio/TileGrid.c
 msgid "Tile width must exactly divide bitmap width"
@@ -2146,7 +2185,7 @@ msgstr "obiekt nie jest iteratorem"
 msgid "object not callable"
 msgstr "obiekt nie jest wywoływalny"
 
-#: py/sequence.c
+#: py/sequence.c shared-bindings/displayio/Group.c
 msgid "object not in sequence"
 msgstr "obiektu nie ma sekwencji"
 
@@ -2400,10 +2439,6 @@ msgstr "błąd składni w deskryptorze uctypes"
 msgid "threshold must be in the range 0-65536"
 msgstr "threshold musi być w zakresie 0-65536"
 
-#: shared-bindings/displayio/TileGrid.c
-msgid "tile index out of bounds"
-msgstr "indeks kafelka poza zakresem"
-
 #: shared-bindings/time/__init__.c
 msgid "time.struct_time() takes a 9-sequence"
 msgstr "time.struct_time() wymaga 9-elementowej sekwencji"
@@ -2560,6 +2595,11 @@ msgstr "zły typ dla operatora"
 msgid "unsupported types for %q: '%s', '%s'"
 msgstr "złe typy dla %q: '%s', '%s'"
 
+#: py/objint.c
+#, c-format
+msgid "value must fit in %d byte(s)"
+msgstr ""
+
 #: shared-bindings/displayio/Bitmap.c
 msgid "value_count must be > 0"
 msgstr "value_count musi być > 0"
@@ -2600,3 +2640,12 @@ msgstr "zerowy krok"
 
 #~ msgid "Invalid data pin"
 #~ msgstr "Zła nóżka danych"
+
+#~ msgid "Must be a Group subclass."
+#~ msgstr "Musi dziedziczyć z Group."
+
+#~ msgid "Tile indices must be 0 - 255"
+#~ msgstr "Indeks kafelka musi być pomiędzy 0 a 255 włącznie"
+
+#~ msgid "tile index out of bounds"
+#~ msgstr "indeks kafelka poza zakresem"
