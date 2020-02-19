@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-04-17 11:17-0700\n"
+"POT-Creation-Date: 2019-07-19 10:38-0700\n"
 "PO-Revision-Date: 2018-10-02 16:27+0200\n"
 "Last-Translator: Enrico Paganin <enrico.paganin@mail.com>\n"
 "Language-Team: \n"
@@ -124,12 +124,12 @@ msgstr "intero '%s' non è nell'intervallo %d..%d"
 #: py/obj.c
 #, c-format
 msgid "'%s' object does not support item assignment"
-msgstr ""
+msgstr "oggeto '%s' non supporta assengnamento di item"
 
 #: py/obj.c
 #, c-format
 msgid "'%s' object does not support item deletion"
-msgstr ""
+msgstr "oggeto '%s' non supporta eliminamento di item"
 
 #: py/runtime.c
 msgid "'%s' object has no attribute '%q'"
@@ -143,7 +143,7 @@ msgstr "l'oggetto '%s' non è un iteratore"
 #: py/objtype.c py/runtime.c
 #, c-format
 msgid "'%s' object is not callable"
-msgstr ""
+msgstr "oggeto '%s' non è chiamabile"
 
 #: py/runtime.c
 #, c-format
@@ -153,11 +153,11 @@ msgstr "l'oggetto '%s' non è iterabile"
 #: py/obj.c
 #, c-format
 msgid "'%s' object is not subscriptable"
-msgstr ""
+msgstr "oggeto '%s' non è "
 
 #: py/objstr.c
 msgid "'=' alignment not allowed in string format specifier"
-msgstr ""
+msgstr "aligniamento '=' non è permesso per il specificatore formato string"
 
 #: shared-module/struct/__init__.c
 msgid "'S' and 'O' are not supported format types"
@@ -201,7 +201,7 @@ msgstr "'yield' al di fuori della funzione"
 
 #: py/compile.c
 msgid "*x must be assignment target"
-msgstr ""
+msgstr "*x deve essere il bersaglio del assegnamento"
 
 #: py/obj.c
 msgid ", in %q\n"
@@ -276,15 +276,15 @@ msgstr "AnalogOut non supportato sul pin scelto"
 
 #: ports/atmel-samd/common-hal/pulseio/PulseOut.c
 msgid "Another send is already active"
-msgstr ""
+msgstr "Another send è gia activato"
 
 #: shared-bindings/pulseio/PulseOut.c
 msgid "Array must contain halfwords (type 'H')"
-msgstr ""
+msgstr "Array deve avere mezzoparole (typo 'H')"
 
 #: shared-bindings/nvm/ByteArray.c
 msgid "Array values should be single bytes."
-msgstr ""
+msgstr "Valori di Array dovrebbero essere bytes singulari"
 
 #: supervisor/shared/safe_mode.c
 msgid "Attempted heap allocation when MicroPython VM not running.\n"
@@ -321,7 +321,7 @@ msgstr "La luminosità deve essere compreso tra 0 e 255"
 
 #: shared-bindings/displayio/Display.c
 msgid "Brightness not adjustable"
-msgstr ""
+msgstr "Illiminazione non è regolabile"
 
 #: shared-module/usb_hid/Device.c
 #, c-format
@@ -347,26 +347,30 @@ msgstr "i buffer devono essere della stessa lunghezza"
 msgid "Bytes must be between 0 and 255."
 msgstr "I byte devono essere compresi tra 0 e 255"
 
+#: py/objtype.c
+msgid "Call super().__init__() before accessing native object."
+msgstr ""
+
 #: shared-bindings/_pixelbuf/PixelBuf.c
 #, c-format
 msgid "Can not use dotstar with %s"
-msgstr ""
+msgstr "dotstar non può essere usato con %s"
 
 #: shared-bindings/bleio/Device.c
 msgid "Can't add services in Central mode"
-msgstr ""
+msgstr "non si può aggiungere servizi in Central mode"
 
 #: shared-bindings/bleio/Device.c
 msgid "Can't advertise in Central mode"
-msgstr ""
+msgstr "non si può pubblicizzare in Central mode"
 
 #: shared-bindings/bleio/Device.c
 msgid "Can't change the name in Central mode"
-msgstr ""
+msgstr "non si può cambiare il nome in Central mode"
 
 #: shared-bindings/bleio/Device.c
 msgid "Can't connect in Peripheral mode"
-msgstr ""
+msgstr "non si può connettere in Periferal mode"
 
 #: shared-bindings/displayio/Bitmap.c shared-bindings/pulseio/PulseIn.c
 msgid "Cannot delete values"
@@ -375,7 +379,7 @@ msgstr "Impossibile cancellare valori"
 #: ports/atmel-samd/common-hal/digitalio/DigitalInOut.c
 #: ports/nrf/common-hal/digitalio/DigitalInOut.c
 msgid "Cannot get pull while in output mode"
-msgstr ""
+msgstr "non si può tirare quando nella modalita output"
 
 #: ports/nrf/common-hal/microcontroller/Processor.c
 #, fuzzy
@@ -405,7 +409,7 @@ msgstr ""
 
 #: shared-bindings/digitalio/DigitalInOut.c
 msgid "Cannot set value when direction is input."
-msgstr ""
+msgstr "non si può impostare un valore quando direzione è input"
 
 #: py/objslice.c
 msgid "Cannot subclass slice"
@@ -425,15 +429,15 @@ msgstr "Impossibile scrivere senza pin MOSI."
 
 #: shared-bindings/bleio/Service.c
 msgid "Characteristic UUID doesn't match Service UUID"
-msgstr ""
+msgstr "caratteristico UUID non assomiglia servizio UUID"
 
 #: ports/nrf/common-hal/bleio/Service.c
 msgid "Characteristic already in use by another Service."
-msgstr ""
+msgstr "caratteristico già usato da un altro servizio"
 
 #: shared-bindings/bleio/CharacteristicBuffer.c
 msgid "CharacteristicBuffer writing not provided"
-msgstr ""
+msgstr "CharacteristicBuffer scritura non dato"
 
 #: shared-module/bitbangio/SPI.c
 msgid "Clock pin init failed."
@@ -441,7 +445,7 @@ msgstr "Inizializzazione del pin di clock fallita."
 
 #: shared-module/bitbangio/I2C.c
 msgid "Clock stretch too long"
-msgstr ""
+msgstr "Orologio e troppo allungato"
 
 #: ports/atmel-samd/common-hal/audiobusio/I2SOut.c
 msgid "Clock unit in use"
@@ -455,6 +459,14 @@ msgstr ""
 #, fuzzy
 msgid "Command must be an int between 0 and 255"
 msgstr "I byte devono essere compresi tra 0 e 255"
+
+#: py/persistentcode.c
+msgid "Corrupt .mpy file"
+msgstr ""
+
+#: py/emitglue.c
+msgid "Corrupt raw code"
+msgstr ""
 
 #: ports/nrf/common-hal/bleio/UUID.c
 #, c-format
@@ -515,6 +527,7 @@ msgid "Drive mode not used when direction is input."
 msgstr ""
 
 #: ports/atmel-samd/common-hal/frequencyio/FrequencyIn.c
+#: ports/atmel-samd/common-hal/ps2io/Ps2.c
 #: ports/atmel-samd/common-hal/pulseio/PulseIn.c
 msgid "EXTINT channel already in use"
 msgstr "Canale EXTINT già in uso"
@@ -543,6 +556,10 @@ msgstr "Atteso un %q"
 #: shared-module/_pixelbuf/PixelBuf.c
 #, c-format
 msgid "Expected tuple of length %d, got %d"
+msgstr ""
+
+#: shared-bindings/ps2io/Ps2.c
+msgid "Failed sending command."
 msgstr ""
 
 #: ports/nrf/common-hal/bleio/Device.c
@@ -622,7 +639,7 @@ msgstr "Impossibile fermare advertisement. status: 0x%02x"
 #: ports/nrf/common-hal/bleio/Characteristic.c
 #, c-format
 msgid "Failed to notify or indicate attribute value, err 0x%04x"
-msgstr ""
+msgstr "Notificamento o indicazione di attribute value fallito, err 0x%04x"
 
 #: ports/nrf/common-hal/bleio/Characteristic.c
 #, fuzzy, c-format
@@ -632,7 +649,7 @@ msgstr "Impossibile leggere valore dell'attributo. status: 0x%02x"
 #: ports/nrf/common-hal/bleio/Characteristic.c
 #, c-format
 msgid "Failed to read attribute value, err 0x%04x"
-msgstr ""
+msgstr "Tentative leggere attribute value fallito, err 0x%04x"
 
 #: ports/nrf/common-hal/bleio/Characteristic.c
 #, fuzzy, c-format
@@ -702,21 +719,21 @@ msgstr "File esistente"
 
 #: ports/nrf/peripherals/nrf/nvm.c
 msgid "Flash erase failed"
-msgstr ""
+msgstr "Cancellamento di Flash fallito"
 
 #: ports/nrf/peripherals/nrf/nvm.c
 #, c-format
 msgid "Flash erase failed to start, err 0x%04x"
-msgstr ""
+msgstr "Iniziamento di Cancellamento di Flash fallito, err 0x%04x"
 
 #: ports/nrf/peripherals/nrf/nvm.c
 msgid "Flash write failed"
-msgstr ""
+msgstr "Impostazione di Flash fallito"
 
 #: ports/nrf/peripherals/nrf/nvm.c
 #, c-format
 msgid "Flash write failed to start, err 0x%04x"
-msgstr ""
+msgstr "Iniziamento di Impostazione di Flash dallito, err 0x%04x"
 
 #: ports/atmel-samd/common-hal/frequencyio/FrequencyIn.c
 msgid "Frequency captured is above capability. Capture Paused."
@@ -775,7 +792,7 @@ msgstr "Argomento non valido"
 
 #: shared-module/displayio/Bitmap.c
 msgid "Invalid bits per value"
-msgstr ""
+msgstr "bits per valore invalido"
 
 #: ports/nrf/common-hal/busio/UART.c
 #, fuzzy
@@ -784,7 +801,7 @@ msgstr "lunghezza del buffer non valida"
 
 #: ports/atmel-samd/common-hal/frequencyio/FrequencyIn.c
 msgid "Invalid capture period. Valid range: 1 - 500"
-msgstr ""
+msgstr "periodo di cattura invalido. Zona valida: 1 - 500"
 
 #: shared-bindings/audioio/Mixer.c
 #, fuzzy
@@ -855,8 +872,12 @@ msgid "LHS of keyword arg must be an id"
 msgstr ""
 
 #: shared-module/displayio/Group.c
-msgid "Layer must be a Group or TileGrid subclass."
+msgid "Layer already in a group."
 msgstr ""
+
+#: shared-module/displayio/Group.c
+msgid "Layer must be a Group or TileGrid subclass."
+msgstr "Layer deve essere un Group o TileGrid subclass"
 
 #: py/objslice.c
 msgid "Length must be an int"
@@ -884,7 +905,7 @@ msgstr "inizializzazione del pin MOSI fallita."
 #: shared-module/displayio/Shape.c
 #, c-format
 msgid "Maximum x value when mirrored is %d"
-msgstr ""
+msgstr "Valore massimo di x quando rispachiato è %d"
 
 #: supervisor/shared/safe_mode.c
 msgid "MicroPython NLR jump failed. Likely memory corruption.\n"
@@ -892,15 +913,15 @@ msgstr ""
 
 #: supervisor/shared/safe_mode.c
 msgid "MicroPython fatal error.\n"
-msgstr ""
+msgstr "Errore fatale in MicroPython.\n"
 
 #: shared-bindings/audiobusio/PDMIn.c
 msgid "Microphone startup delay must be in range 0.0 to 1.0"
 msgstr ""
 "Il ritardo di avvio del microfono deve essere nell'intervallo tra 0.0 e 1.0"
 
-#: shared-bindings/displayio/Display.c
-msgid "Must be a Group subclass."
+#: shared-bindings/displayio/Group.c
+msgid "Must be a %q subclass."
 msgstr ""
 
 #: ports/atmel-samd/common-hal/analogio/AnalogOut.c
@@ -922,7 +943,7 @@ msgstr "Nessun pin TX"
 
 #: ports/atmel-samd/common-hal/frequencyio/FrequencyIn.c
 msgid "No available clocks"
-msgstr ""
+msgstr "Nessun orologio a disposizione"
 
 #: shared-bindings/board/__init__.c
 msgid "No default %q bus"
@@ -936,6 +957,10 @@ msgstr "Nessun GCLK libero"
 msgid "No hardware random available"
 msgstr "Nessun generatore hardware di numeri casuali disponibile"
 
+#: ports/atmel-samd/common-hal/ps2io/Ps2.c
+msgid "No hardware support on clk pin"
+msgstr ""
+
 #: ports/atmel-samd/common-hal/frequencyio/FrequencyIn.c
 #: ports/atmel-samd/common-hal/pulseio/PulseIn.c
 msgid "No hardware support on pin"
@@ -943,7 +968,7 @@ msgstr "Nessun supporto hardware sul pin"
 
 #: py/moduerrno.c
 msgid "No space left on device"
-msgstr ""
+msgstr "Non che spazio sul dispositivo"
 
 #: py/moduerrno.c
 msgid "No such file/directory"
@@ -1028,6 +1053,10 @@ msgstr ""
 #, fuzzy
 msgid "Plus any modules on the filesystem\n"
 msgstr "Imposssibile rimontare il filesystem"
+
+#: shared-bindings/ps2io/Ps2.c
+msgid "Pop from an empty Ps2 buffer"
+msgstr ""
 
 #: main.c
 msgid "Press any key to enter the REPL. Use CTRL-D to reload."
@@ -1136,6 +1165,12 @@ msgid ""
 msgstr ""
 
 #: supervisor/shared/safe_mode.c
+msgid ""
+"The `microcontroller` module was used to boot into safe mode. Press reset to "
+"exit safe mode.\n"
+msgstr ""
+
+#: supervisor/shared/safe_mode.c
 #, fuzzy
 msgid ""
 "The microcontroller's power dipped. Please make sure your power supply "
@@ -1173,7 +1208,11 @@ msgid "Tile height must exactly divide bitmap height"
 msgstr ""
 
 #: shared-bindings/displayio/TileGrid.c
-msgid "Tile indices must be 0 - 255"
+msgid "Tile index out of bounds"
+msgstr ""
+
+#: shared-bindings/displayio/TileGrid.c shared-module/displayio/TileGrid.c
+msgid "Tile value out of bounds"
 msgstr ""
 
 #: shared-bindings/displayio/TileGrid.c
@@ -1194,7 +1233,7 @@ msgstr ""
 
 #: shared-bindings/displayio/Display.c
 msgid "Too many displays"
-msgstr ""
+msgstr "Troppi schermi"
 
 #: py/obj.c
 msgid "Traceback (most recent call last):\n"
@@ -1749,7 +1788,7 @@ msgstr "y dovrebbe essere un int"
 #: ports/nrf/common-hal/busio/UART.c
 #, c-format
 msgid "error = 0x%08lX"
-msgstr ""
+msgstr "errore = 0x%08lX"
 
 #: py/runtime.c
 msgid "exceptions must derive from BaseException"
@@ -2198,7 +2237,7 @@ msgstr "l'oggetto non è un iteratore"
 msgid "object not callable"
 msgstr ""
 
-#: py/sequence.c
+#: py/sequence.c shared-bindings/displayio/Group.c
 msgid "object not in sequence"
 msgstr "oggetto non in sequenza"
 
@@ -2458,10 +2497,6 @@ msgstr "errore di sintassi nel descrittore uctypes"
 msgid "threshold must be in the range 0-65536"
 msgstr "la soglia deve essere nell'intervallo 0-65536"
 
-#: shared-bindings/displayio/TileGrid.c
-msgid "tile index out of bounds"
-msgstr ""
-
 #: shared-bindings/time/__init__.c
 msgid "time.struct_time() takes a 9-sequence"
 msgstr ""
@@ -2619,6 +2654,11 @@ msgstr "tipo non supportato per l'operando"
 msgid "unsupported types for %q: '%s', '%s'"
 msgstr "tipi non supportati per %q: '%s', '%s'"
 
+#: py/objint.c
+#, c-format
+msgid "value must fit in %d byte(s)"
+msgstr ""
+
 #: shared-bindings/displayio/Bitmap.c
 msgid "value_count must be > 0"
 msgstr ""
@@ -2711,6 +2751,9 @@ msgstr "zero step"
 
 #~ msgid "Multiple PWM frequencies not supported. PWM already set to %dhz."
 #~ msgstr "Frequenze PWM multiple non supportate. PWM già impostato a %shz."
+
+#~ msgid "Must be a Group subclass."
+#~ msgstr "Deve essere un Group subclass"
 
 #~ msgid "No PulseIn support for %q"
 #~ msgstr "Nessun supporto per PulseIn per %q"

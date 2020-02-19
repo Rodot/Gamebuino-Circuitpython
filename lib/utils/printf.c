@@ -106,6 +106,8 @@ STATIC void strn_print_strn(void *data, const char *str, size_t len) {
 #if defined(__GNUC__) && !defined(__clang__) && __GNUC__ < 9
 // uClibc requires this alias to be defined, or there may be link errors
 // when linkings against it statically.
+// GCC 9 gives a warning about missing attributes so it's excluded until
+// uClibc+GCC9 support is needed.
 int __GI_vsnprintf(char *str, size_t size, const char *fmt, va_list ap) __attribute__((weak, alias ("vsnprintf")));
 #endif
 
